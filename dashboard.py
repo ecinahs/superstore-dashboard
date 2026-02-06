@@ -7,27 +7,53 @@ import numpy as np
 
 # Page configuration
 st.set_page_config(
-    page_title="Superstore Sales Dashboard",
+    page_title="Testing Dashboard For Me",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling with Mint Green background
 st.markdown("""
     <style>
+    /* Mint green gradient background */
+    .stApp {
+        background: linear-gradient(135deg, #e0f7f4 0%, #b8f2e6 50%, #95e1d3 100%);
+    }
+
     .main {
         padding: 0rem 1rem;
     }
-    .metric-card {
-        background-color: #f0f2f6;
+
+    /* Metric cards with white background */
+    .stMetric {
+        background-color: white;
         padding: 20px;
-        border-radius: 10px;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
+
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #b8f2e6 0%, #95e1d3 100%);
+    }
+
+    /* Title color */
     h1 {
-        color: #1f77b4;
+        color: #0d9488;
         padding-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Subheader color */
+    h2, h3 {
+        color: #0f766e;
+    }
+
+    /* Chart containers */
+    .element-container {
+        background-color: white;
+        border-radius: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -48,7 +74,7 @@ def load_data():
 df = load_data()
 
 # Title and description
-st.title("📊 Superstore Sales Dashboard")
+st.title("TESTING DASHBOARD FOR ME")
 st.markdown("### Interactive analysis of sales, profit, and customer behavior")
 
 # Sidebar filters
@@ -162,51 +188,12 @@ with col5:
 
 st.markdown("---")
 
-# Row 1: Sales and Profit Trends
-st.subheader("📊 Sales & Profit Trends Over Time")
-col1, col2 = st.columns(2)
+# Product Performance Analysis - 4 Key Charts
+st.subheader("🏪 Product Performance Analysis")
+st.markdown("##### Key insights into product categories, regions, and profitability")
+st.markdown("")
 
-with col1:
-    # Monthly sales trend
-    monthly_sales = filtered_df.groupby('Month-Year')['Sales'].sum().reset_index()
-    fig_sales_trend = px.line(
-        monthly_sales,
-        x='Month-Year',
-        y='Sales',
-        title='Monthly Sales Trend',
-        labels={'Sales': 'Sales ($)', 'Month-Year': 'Month'},
-        markers=True
-    )
-    fig_sales_trend.update_layout(
-        hovermode='x unified',
-        plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_tickangle=-45
-    )
-    st.plotly_chart(fig_sales_trend, use_container_width=True)
-
-with col2:
-    # Monthly profit trend
-    monthly_profit = filtered_df.groupby('Month-Year')['Profit'].sum().reset_index()
-    fig_profit_trend = px.line(
-        monthly_profit,
-        x='Month-Year',
-        y='Profit',
-        title='Monthly Profit Trend',
-        labels={'Profit': 'Profit ($)', 'Month-Year': 'Month'},
-        markers=True,
-        color_discrete_sequence=['#2ecc71']
-    )
-    fig_profit_trend.update_layout(
-        hovermode='x unified',
-        plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_tickangle=-45
-    )
-    st.plotly_chart(fig_profit_trend, use_container_width=True)
-
-st.markdown("---")
-
-# Row 2: Category and Regional Analysis
-st.subheader("🏪 Category & Regional Performance")
+# Row 1: Category and Regional Sales
 col1, col2 = st.columns(2)
 
 with col1:
@@ -216,12 +203,19 @@ with col1:
         category_sales,
         x='Category',
         y='Sales',
-        title='Sales by Category',
+        title='💼 Sales by Category',
         labels={'Sales': 'Sales ($)'},
         color='Sales',
-        color_continuous_scale='Blues'
+        color_continuous_scale='Teal',
+        text='Sales'
     )
-    fig_category.update_layout(showlegend=False)
+    fig_category.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+    fig_category.update_layout(
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
     st.plotly_chart(fig_category, use_container_width=True)
 
 with col2:
@@ -231,18 +225,24 @@ with col2:
         region_sales,
         x='Region',
         y='Sales',
-        title='Sales by Region',
+        title='🗺️ Sales by Region',
         labels={'Sales': 'Sales ($)'},
         color='Sales',
-        color_continuous_scale='Greens'
+        color_continuous_scale='Mint',
+        text='Sales'
     )
-    fig_region.update_layout(showlegend=False)
+    fig_region.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+    fig_region.update_layout(
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
     st.plotly_chart(fig_region, use_container_width=True)
 
-st.markdown("---")
+st.markdown("")
 
-# Row 3: Sub-Category and Segment Analysis
-st.subheader("📦 Sub-Category & Customer Segment Analysis")
+# Row 2: Sub-Categories and Top Products
 col1, col2 = st.columns(2)
 
 with col1:
@@ -252,59 +252,22 @@ with col1:
         subcategory_sales,
         y='Sub-Category',
         x='Sales',
-        title='Top 10 Sub-Categories by Sales',
+        title='📦 Top 10 Sub-Categories by Sales',
         labels={'Sales': 'Sales ($)'},
         orientation='h',
         color='Sales',
-        color_continuous_scale='Oranges'
+        color_continuous_scale='Emrld',
+        text='Sales'
     )
-    fig_subcategory.update_layout(yaxis={'categoryorder': 'total ascending'})
+    fig_subcategory.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+    fig_subcategory.update_layout(
+        yaxis={'categoryorder': 'total ascending'},
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        margin=dict(t=50, b=50, l=150, r=50),
+        height=500
+    )
     st.plotly_chart(fig_subcategory, use_container_width=True)
-
-with col2:
-    # Segment Distribution
-    segment_data = filtered_df.groupby('Segment').agg({
-        'Sales': 'sum',
-        'Profit': 'sum'
-    }).reset_index()
-
-    fig_segment = px.pie(
-        segment_data,
-        values='Sales',
-        names='Segment',
-        title='Sales Distribution by Customer Segment',
-        hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Set3
-    )
-    fig_segment.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig_segment, use_container_width=True)
-
-st.markdown("---")
-
-# Row 4: Profit Analysis
-st.subheader("💰 Profit Analysis")
-col1, col2 = st.columns(2)
-
-with col1:
-    # Profit by Category
-    category_profit = filtered_df.groupby('Category').agg({
-        'Profit': 'sum',
-        'Sales': 'sum'
-    }).reset_index()
-    category_profit['Profit Margin %'] = (category_profit['Profit'] / category_profit['Sales'] * 100).round(2)
-
-    fig_profit_category = px.bar(
-        category_profit,
-        x='Category',
-        y='Profit',
-        title='Profit by Category',
-        labels={'Profit': 'Profit ($)'},
-        color='Profit Margin %',
-        color_continuous_scale='RdYlGn',
-        text='Profit Margin %'
-    )
-    fig_profit_category.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-    st.plotly_chart(fig_profit_category, use_container_width=True)
 
 with col2:
     # Top 10 Most Profitable Products
@@ -313,97 +276,22 @@ with col2:
         product_profit,
         y='Product Name',
         x='Profit',
-        title='Top 10 Most Profitable Products',
+        title='💰 Top 10 Most Profitable Products',
         labels={'Profit': 'Profit ($)'},
         orientation='h',
         color='Profit',
-        color_continuous_scale='Greens'
+        color_continuous_scale='Tealgrn',
+        text='Profit'
     )
-    fig_product_profit.update_layout(yaxis={'categoryorder': 'total ascending'})
+    fig_product_profit.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+    fig_product_profit.update_layout(
+        yaxis={'categoryorder': 'total ascending'},
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        margin=dict(t=50, b=50, l=200, r=50),
+        height=500
+    )
     st.plotly_chart(fig_product_profit, use_container_width=True)
-
-st.markdown("---")
-
-# Row 5: Discount Analysis and Shipping
-st.subheader("🎯 Discount Impact & Shipping Analysis")
-col1, col2 = st.columns(2)
-
-with col1:
-    # Discount vs Profit scatter
-    sample_df = filtered_df.sample(min(1000, len(filtered_df)))  # Sample for performance
-    fig_discount = px.scatter(
-        sample_df,
-        x='Discount',
-        y='Profit',
-        title='Discount vs Profit Relationship',
-        labels={'Discount': 'Discount Rate', 'Profit': 'Profit ($)'},
-        color='Category',
-        opacity=0.6,
-        trendline='ols'
-    )
-    fig_discount.update_layout(plot_bgcolor='rgba(0,0,0,0)')
-    st.plotly_chart(fig_discount, use_container_width=True)
-
-with col2:
-    # Shipping Mode Analysis
-    ship_mode_data = filtered_df.groupby('Ship Mode').agg({
-        'Sales': 'sum',
-        'Order ID': 'nunique'
-    }).reset_index()
-    ship_mode_data.columns = ['Ship Mode', 'Sales', 'Orders']
-
-    fig_ship = px.bar(
-        ship_mode_data,
-        x='Ship Mode',
-        y='Orders',
-        title='Orders by Shipping Mode',
-        labels={'Orders': 'Number of Orders'},
-        color='Sales',
-        color_continuous_scale='Purples',
-        text='Orders'
-    )
-    fig_ship.update_traces(textposition='outside')
-    st.plotly_chart(fig_ship, use_container_width=True)
-
-st.markdown("---")
-
-# Row 6: Geographic Analysis
-st.subheader("🗺️ Geographic Performance")
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    # Top 15 States by Sales
-    state_sales = filtered_df.groupby('State').agg({
-        'Sales': 'sum',
-        'Profit': 'sum',
-        'Order ID': 'nunique'
-    }).reset_index().sort_values('Sales', ascending=False).head(15)
-    state_sales.columns = ['State', 'Sales', 'Profit', 'Orders']
-
-    fig_states = px.bar(
-        state_sales,
-        y='State',
-        x='Sales',
-        title='Top 15 States by Sales',
-        labels={'Sales': 'Sales ($)'},
-        orientation='h',
-        color='Profit',
-        color_continuous_scale='Viridis'
-    )
-    fig_states.update_layout(yaxis={'categoryorder': 'total ascending'})
-    st.plotly_chart(fig_states, use_container_width=True)
-
-with col2:
-    # Regional Summary Table
-    st.markdown("#### Regional Summary")
-    regional_summary = filtered_df.groupby('Region').agg({
-        'Sales': 'sum',
-        'Profit': 'sum',
-        'Order ID': 'nunique'
-    }).round(2)
-    regional_summary.columns = ['Sales ($)', 'Profit ($)', 'Orders']
-    regional_summary['Profit Margin %'] = (regional_summary['Profit ($)'] / regional_summary['Sales ($)'] * 100).round(2)
-    st.dataframe(regional_summary, use_container_width=True)
 
 st.markdown("---")
 
@@ -448,7 +336,7 @@ st.markdown(f"Showing {min(num_rows, len(display_df))} of {len(display_df)} reco
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center; color: #666;'>
-        <p>📊 Superstore Sales Dashboard | Data Analysis Tool</p>
+        <p>TESTING DASHBOARD FOR ME | Data Analysis Tool</p>
         <p>Use the filters in the sidebar to explore different segments of your data</p>
     </div>
 """, unsafe_allow_html=True)
