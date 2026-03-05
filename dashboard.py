@@ -295,6 +295,211 @@ with col2:
 
 st.markdown("---")
 
+# Row 3: Sales Trends and Customer Segments
+st.subheader("📊 Trends & Customer Analysis")
+st.markdown("##### Sales performance over time and customer segment insights")
+st.markdown("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    # Sales Trend Over Time
+    monthly_sales = filtered_df.groupby('Month-Year').agg({
+        'Sales': 'sum',
+        'Profit': 'sum'
+    }).reset_index()
+
+    from plotly.subplots import make_subplots
+    fig_trend = make_subplots(specs=[[{"secondary_y": True}]])
+    fig_trend.add_trace(
+        go.Scatter(x=monthly_sales['Month-Year'], y=monthly_sales['Sales'],
+                   name="Sales", line=dict(color='#0d9488', width=3),
+                   fill='tozeroy', fillcolor='rgba(13, 148, 136, 0.2)'),
+        secondary_y=False
+    )
+    fig_trend.add_trace(
+        go.Scatter(x=monthly_sales['Month-Year'], y=monthly_sales['Profit'],
+                   name="Profit", line=dict(color='#f59e0b', width=3)),
+        secondary_y=True
+    )
+    fig_trend.update_xaxes(title_text="Month")
+    fig_trend.update_yaxes(title_text="Sales ($)", secondary_y=False)
+    fig_trend.update_yaxes(title_text="Profit ($)", secondary_y=True)
+    fig_trend.update_layout(
+        title='📈 Sales & Profit Trend Over Time',
+        hovermode='x unified',
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        height=400,
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
+    st.plotly_chart(fig_trend, use_container_width=True)
+
+with col2:
+    # Customer Segment Distribution
+    segment_data = filtered_df.groupby('Segment').agg({
+        'Sales': 'sum',
+        'Profit': 'sum',
+        'Order ID': 'count'
+    }).reset_index()
+
+    fig_segment = px.pie(
+        segment_data,
+        values='Sales',
+        names='Segment',
+        title='👥 Sales Distribution by Customer Segment',
+        hole=0.4,
+        color_discrete_sequence=['#0d9488', '#14b8a6', '#5eead4']
+    )
+    fig_segment.update_traces(textposition='inside', textinfo='percent+label')
+    fig_segment.update_layout(
+        paper_bgcolor='white',
+        height=400,
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
+    st.plotly_chart(fig_segment, use_container_width=True)
+
+st.markdown("---")
+
+# Row 4: Shipping and Profit/Loss Analysis
+st.subheader("📦 Shipping & Profitability Analysis")
+st.markdown("##### Shipping mode preferences and profit distribution")
+st.markdown("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    # Shipping Mode Analysis
+    ship_data = filtered_df.groupby('Ship Mode').agg({
+        'Order ID': 'count',
+        'Sales': 'sum'
+    }).reset_index()
+    ship_data.columns = ['Ship Mode', 'Number of Orders', 'Total Sales']
+    ship_data = ship_data.sort_values('Number of Orders', ascending=False)
+
+    fig_ship = go.Figure()
+    fig_ship.add_trace(go.Bar(
+        x=ship_data['Ship Mode'],
+        y=ship_data['Number of Orders'],
+        name='Orders',
+        marker_color=['#0d9488', '#14b8a6', '#5eead4', '#99f6e4'],
+        text=ship_data['Number of Orders'],
+        textposition='outside'
+    ))
+    fig_ship.update_layout(
+        title='📮 Orders by Shipping Mode',
+        xaxis_title="Ship Mode",
+        yaxis_title="Number of Orders",
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        height=400,
+        showlegend=False,
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
+    st.plotly_chart(fig_ship, use_container_width=True)
+
+with col2:
+    # Profit vs Loss Distribution
+    profit_orders = len(filtered_df[filtered_df['Profit'] > 0])
+    loss_orders = len(filtered_df[filtered_df['Profit'] < 0])
+    breakeven_orders = len(filtered_df[filtered_df['Profit'] == 0])
+
+    total_profit_amt = filtered_df[filtered_df['Profit'] > 0]['Profit'].sum()
+    total_loss_amt = abs(filtered_df[filtered_df['Profit'] < 0]['Profit'].sum())
+
+    profit_loss_data = pd.DataFrame({
+        'Category': ['Profitable Orders', 'Loss Orders', 'Break-even'],
+        'Count': [profit_orders, loss_orders, breakeven_orders],
+        'Amount': [total_profit_amt, total_loss_amt, 0]
+    })
+
+    fig_profit_loss = go.Figure(data=[
+        go.Bar(
+            x=profit_loss_data['Category'],
+            y=profit_loss_data['Count'],
+            marker_color=['#0d9488', '#ef4444', '#fbbf24'],
+            text=profit_loss_data['Count'],
+            textposition='outside',
+            customdata=profit_loss_data['Amount'],
+            hovertemplate='<b>%{x}</b><br>Orders: %{y}<br>Amount: $%{customdata:,.2f}<extra></extra>'
+        )
+    ])
+    fig_profit_loss.update_layout(
+        title='💰 Profit vs Loss Distribution',
+        yaxis_title="Number of Orders",
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        height=400,
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
+    st.plotly_chart(fig_profit_loss, use_container_width=True)
+
+st.markdown("---")
+
+# Row 5: Top States and Discount Analysis
+st.subheader("🗺️ Geographic & Discount Insights")
+st.markdown("##### State-level performance and discount impact")
+st.markdown("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    # Top 10 States by Sales
+    state_data = filtered_df.groupby('State').agg({
+        'Sales': 'sum',
+        'Profit': 'sum'
+    }).reset_index()
+    state_data['Profit Margin %'] = (state_data['Profit'] / state_data['Sales'] * 100).round(2)
+    top_states = state_data.sort_values('Sales', ascending=False).head(10)
+
+    fig_states = px.bar(
+        top_states,
+        x='Sales',
+        y='State',
+        orientation='h',
+        color='Profit Margin %',
+        color_continuous_scale='RdYlGn',
+        title='🏆 Top 10 States by Sales',
+        text='Sales'
+    )
+    fig_states.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+    fig_states.update_layout(
+        yaxis={'categoryorder':'total ascending'},
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        height=400,
+        margin=dict(t=50, b=50, l=100, r=50)
+    )
+    st.plotly_chart(fig_states, use_container_width=True)
+
+with col2:
+    # Discount vs Profit Analysis
+    discount_analysis = filtered_df.groupby('Discount').agg({
+        'Profit': 'mean',
+        'Sales': 'sum',
+        'Order ID': 'count'
+    }).reset_index()
+
+    fig_discount = px.scatter(
+        discount_analysis,
+        x='Discount',
+        y='Profit',
+        size='Order ID',
+        color='Sales',
+        title='💸 Discount Impact on Average Profit',
+        labels={'Discount': 'Discount Rate', 'Profit': 'Average Profit ($)', 'Order ID': 'Order Count'},
+        color_continuous_scale='Teal'
+    )
+    fig_discount.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='white',
+        height=400,
+        margin=dict(t=50, b=50, l=50, r=50)
+    )
+    st.plotly_chart(fig_discount, use_container_width=True)
+
+st.markdown("---")
+
 # Row 7: Detailed Data Table
 st.subheader("📋 Detailed Transaction Data")
 

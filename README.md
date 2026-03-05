@@ -64,6 +64,22 @@ streamlit run dashboard.py
 - `01_raw_data/Sample - Superstore.csv` - Source data file
 - `03_notebooks/Superstore_Analysis.ipynb` - Jupyter notebook with detailed analysis
 
+## Deployment
+
+Want to share your dashboard online? Check out the **[PUBLISHING_GUIDE.md](PUBLISHING_GUIDE.md)** for detailed instructions on deploying to:
+
+- 🌟 **Streamlit Community Cloud** (Recommended - FREE)
+- ☁️ **Heroku**
+- 🚀 **Other cloud platforms** (Render, Railway, etc.)
+- 🏠 **Local network sharing**
+
+### Quick Deploy to Streamlit Cloud
+
+1. Push this repository to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io/)
+3. Connect your repository
+4. Deploy with one click!
+
 ## Tips
 
 - Try different filter combinations to uncover insights
@@ -71,3 +87,30 @@ streamlit run dashboard.py
 - Compare performance across categories and regions
 - Identify top-performing and loss-making products
 - Analyze the impact of discounts on profitability
+
+## Data Analysis
+
+A comprehensive Python analysis script is available at `basic_analysis.py` which provides:
+- Dataset overview and data quality checks
+- Financial summary statistics
+- Sales breakdown by category, region, and customer segment
+- Top performing sub-categories and states
+- Shipping mode analysis
+
+Run it with:
+```bash
+python basic_analysis.py
+```
+
+## License
+
+This project uses the Sample Superstore dataset for educational and demonstration purposes.
+
+## Screenshots
+
+The dashboard features:
+- 🎨 Beautiful mint green theme
+- 📊 10+ interactive visualizations
+- 🔍 Advanced filtering capabilities
+- 📱 Responsive design
+- 💾 Data export functionality
