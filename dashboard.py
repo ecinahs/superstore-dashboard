@@ -7,53 +7,125 @@ import numpy as np
 
 # Page configuration
 st.set_page_config(
-    page_title="Testing Dashboard For Me",
-    page_icon="📊",
+    page_title="Superstore Analytics - Dark Mode",
+    page_icon="🌙",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling with Mint Green background
+# Custom CSS for Dark Mode with Teal Accents
 st.markdown("""
     <style>
-    /* Mint green gradient background */
+    /* Dark mode gradient background */
     .stApp {
-        background: linear-gradient(135deg, #e0f7f4 0%, #b8f2e6 50%, #95e1d3 100%);
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     }
 
     .main {
         padding: 0rem 1rem;
     }
 
-    /* Metric cards with white background */
+    /* Metric cards with dark background */
     .stMetric {
-        background-color: white;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        border: 1px solid #334155;
+    }
+
+    .stMetric label {
+        color: #94a3b8 !important;
+    }
+
+    .stMetric [data-testid="stMetricValue"] {
+        color: #14b8a6 !important;
+        font-weight: 700;
+    }
+
+    .stMetric [data-testid="stMetricDelta"] {
+        color: #5eead4 !important;
     }
 
     /* Sidebar styling */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #b8f2e6 0%, #95e1d3 100%);
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        border-right: 1px solid #334155;
     }
 
-    /* Title color */
+    [data-testid="stSidebar"] .stSelectbox label,
+    [data-testid="stSidebar"] h2 {
+        color: #e2e8f0 !important;
+    }
+
+    /* Title with teal glow */
     h1 {
-        color: #0d9488;
+        color: #14b8a6;
         padding-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        text-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+        font-weight: 800;
     }
 
-    /* Subheader color */
-    h2, h3 {
-        color: #0f766e;
+    /* Subheader colors */
+    h2 {
+        color: #5eead4;
+        font-weight: 700;
     }
 
-    /* Chart containers */
+    h3 {
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    /* Chart containers with dark cards */
     .element-container {
-        background-color: white;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 12px;
+        border: 1px solid #334155;
+        padding: 10px;
+    }
+
+    /* Data table styling */
+    .stDataFrame {
+        background-color: #1e293b;
         border-radius: 10px;
+        border: 1px solid #334155;
+    }
+
+    /* Input fields */
+    .stTextInput input,
+    .stSelectbox select {
+        background-color: #1e293b !important;
+        color: #e2e8f0 !important;
+        border: 1px solid #334155 !important;
+    }
+
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+    }
+
+    .stButton button:hover {
+        background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+        box-shadow: 0 6px 16px rgba(20, 184, 166, 0.4);
+    }
+
+    /* Dividers */
+    hr {
+        border-color: #334155;
+    }
+
+    /* Date input */
+    .stDateInput input {
+        background-color: #1e293b !important;
+        color: #e2e8f0 !important;
+        border: 1px solid #334155 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -73,9 +145,18 @@ def load_data():
 # Load the data
 df = load_data()
 
+# Dark mode chart template
+CHART_THEME = {
+    'font': {'color': '#e2e8f0', 'family': 'sans-serif'},
+    'title': {'font': {'color': '#14b8a6', 'size': 16, 'family': 'sans-serif'}},
+    'xaxis': {'gridcolor': '#334155', 'color': '#94a3b8'},
+    'yaxis': {'gridcolor': '#334155', 'color': '#94a3b8'},
+    'coloraxis': {'colorbar': {'tickfont': {'color': '#e2e8f0'}, 'title': {'font': {'color': '#e2e8f0'}}}},
+}
+
 # Title and description
-st.title("TESTING DASHBOARD FOR ME")
-st.markdown("### Interactive analysis of sales, profit, and customer behavior")
+st.title("🌙 SUPERSTORE ANALYTICS - DARK MODE")
+st.markdown("### 🔮 Interactive analysis of sales, profit, and customer behavior")
 
 # Sidebar filters
 st.sidebar.header("🔍 Filters")
@@ -212,9 +293,13 @@ with col1:
     fig_category.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
     fig_category.update_layout(
         showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
-        margin=dict(t=50, b=50, l=50, r=50)
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
+        margin=dict(t=50, b=50, l=50, r=50),
+        font=dict(color='#e2e8f0'),
+        title_font=dict(color='#14b8a6', size=16),
+        xaxis=dict(gridcolor='#334155', color='#94a3b8'),
+        yaxis=dict(gridcolor='#334155', color='#94a3b8')
     )
     st.plotly_chart(fig_category, use_container_width=True)
 
@@ -234,9 +319,13 @@ with col2:
     fig_region.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
     fig_region.update_layout(
         showlegend=False,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
-        margin=dict(t=50, b=50, l=50, r=50)
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
+        margin=dict(t=50, b=50, l=50, r=50),
+        font=dict(color='#e2e8f0'),
+        title_font=dict(color='#14b8a6', size=16),
+        xaxis=dict(gridcolor='#334155', color='#94a3b8'),
+        yaxis=dict(gridcolor='#334155', color='#94a3b8')
     )
     st.plotly_chart(fig_region, use_container_width=True)
 
@@ -262,10 +351,14 @@ with col1:
     fig_subcategory.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
     fig_subcategory.update_layout(
         yaxis={'categoryorder': 'total ascending'},
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         margin=dict(t=50, b=50, l=150, r=50),
-        height=500
+        height=500,
+        font=dict(color='#e2e8f0'),
+        title_font=dict(color='#14b8a6', size=16),
+        xaxis=dict(gridcolor='#334155', color='#94a3b8'),
+        yaxis=dict(gridcolor='#334155', color='#94a3b8')
     )
     st.plotly_chart(fig_subcategory, use_container_width=True)
 
@@ -286,10 +379,14 @@ with col2:
     fig_product_profit.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
     fig_product_profit.update_layout(
         yaxis={'categoryorder': 'total ascending'},
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         margin=dict(t=50, b=50, l=200, r=50),
-        height=500
+        height=500,
+        font=dict(color='#e2e8f0'),
+        title_font=dict(color='#14b8a6', size=16),
+        xaxis=dict(gridcolor='#334155', color='#94a3b8'),
+        yaxis=dict(gridcolor='#334155', color='#94a3b8')
     )
     st.plotly_chart(fig_product_profit, use_container_width=True)
 
@@ -328,8 +425,8 @@ with col1:
     fig_trend.update_layout(
         title='📈 Sales & Profit Trend Over Time',
         hovermode='x unified',
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         height=400,
         margin=dict(t=50, b=50, l=50, r=50)
     )
@@ -390,8 +487,8 @@ with col1:
         title='📮 Orders by Shipping Mode',
         xaxis_title="Ship Mode",
         yaxis_title="Number of Orders",
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         height=400,
         showlegend=False,
         margin=dict(t=50, b=50, l=50, r=50)
@@ -427,8 +524,8 @@ with col2:
     fig_profit_loss.update_layout(
         title='💰 Profit vs Loss Distribution',
         yaxis_title="Number of Orders",
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         height=400,
         margin=dict(t=50, b=50, l=50, r=50)
     )
@@ -465,10 +562,14 @@ with col1:
     fig_states.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
     fig_states.update_layout(
         yaxis={'categoryorder':'total ascending'},
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         height=400,
-        margin=dict(t=50, b=50, l=100, r=50)
+        margin=dict(t=50, b=50, l=100, r=50),
+        font=dict(color='#e2e8f0'),
+        title_font=dict(color='#14b8a6', size=16),
+        xaxis=dict(gridcolor='#334155', color='#94a3b8'),
+        yaxis=dict(gridcolor='#334155', color='#94a3b8')
     )
     st.plotly_chart(fig_states, use_container_width=True)
 
@@ -491,8 +592,8 @@ with col2:
         color_continuous_scale='Teal'
     )
     fig_discount.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='white',
+        plot_bgcolor='#1e293b',
+        paper_bgcolor='#1e293b',
         height=400,
         margin=dict(t=50, b=50, l=50, r=50)
     )
@@ -540,8 +641,9 @@ st.markdown(f"Showing {min(num_rows, len(display_df))} of {len(display_df)} reco
 # Footer
 st.markdown("---")
 st.markdown("""
-    <div style='text-align: center; color: #666;'>
-        <p>TESTING DASHBOARD FOR ME | Data Analysis Tool</p>
-        <p>Use the filters in the sidebar to explore different segments of your data</p>
+    <div style='text-align: center; color: #94a3b8;'>
+        <p style='font-size: 16px; font-weight: 600; color: #14b8a6;'>🌙 SUPERSTORE ANALYTICS - DARK MODE</p>
+        <p style='font-size: 14px;'>Professional Data Analysis Dashboard | Use filters to explore your data</p>
+        <p style='font-size: 12px; color: #64748b; margin-top: 10px;'>Built with Streamlit & Plotly | Dark Theme Optimized</p>
     </div>
 """, unsafe_allow_html=True)
