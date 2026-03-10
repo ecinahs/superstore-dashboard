@@ -1,16 +1,8 @@
-[theme]
-# Dark Mode Theme with Teal Accents
-primaryColor = "#14b8a6"           # Bright teal for interactive elements
-backgroundColor = "#0f172a"         # Deep navy/slate background
-secondaryBackgroundColor = "#1e293b"  # Slightly lighter slate for cards
-textColor = "#e2e8f0"              # Light gray for text
-font = "sans serif"
-
-[browser]
-gatherUsageStats = false
-
 [server]
 headless = true
-port = 8501
-enableCORS = true
-enableXsrfProtection = true
+
+[theme]
+primaryColor = "#4C72B0"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
