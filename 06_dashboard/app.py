@@ -3,205 +3,275 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from pathlib import Path
 
-DATA_PATH = Path(__file__).parent.parent / '02_processed_data' / 'superstore_clean.csv'
-
-# ── Page config ──────────────────────────────────────────────────────────────
+# ── Page config ───────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Superstore Dashboard",
-    page_icon="🛒",
+    page_title="Superstore Analytics",
+    page_icon="📊",
     layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# ── Load data ────────────────────────────────────────────────────────────────
+# ── Dark theme CSS ────────────────────────────────────────────────
+st.markdown("""
+<style>
+    .stApp { background-color: #1e1e2e; color: #e0e0e0; }
+    section[data-testid="stSidebar"] { background-color: #2a2a3e; }
+    .metric-card {
+        background-color: #2a2a3e;
+        border-radius: 10px;
+        padding: 16px 20px;
+        border-left: 4px solid #4ecdc4;
+        margin-bottom: 8px;
+    }
+    .metric-card h3 { margin: 0; font-size: 13px; color: #888; }
+    .metric-card p  { margin: 4px 0 0; font-size: 26px; font-weight: 700; color: #e0e0e0; }
+    .metric-card small { font-size: 12px; color: #4ecdc4; }
+    h1, h2, h3 { color: #e0e0e0 !important; }
+    .stMarkdown hr { border-color: #3a3a4e; }
+</style>
+""", unsafe_allow_html=True)
+
+COLORS = {
+    'bg': '#1e1e2e', 'panel': '#2a2a3e',
+    'teal': '#4ecdc4', 'coral': '#ff6b6b',
+    'yellow': '#ffd93d', 'purple': '#a29bfe',
+    'green': '#6bcb77', 'white': '#e0e0e0', 'grey': '#555'
+}
+PALETTE = [COLORS['teal'], COLORS['coral'], COLORS['yellow'], COLORS['purple'], COLORS['green']]
+
+PLOTLY_LAYOUT = dict(
+    paper_bgcolor=COLORS['bg'], plot_bgcolor=COLORS['panel'],
+    font_color=COLORS['white'], font_family='Arial',
+    legend=dict(bgcolor=COLORS['panel'], bordercolor=COLORS['grey']),
+    xaxis=dict(gridcolor='#3a3a4e', zerolinecolor=COLORS['grey']),
+    yaxis=dict(gridcolor='#3a3a4e', zerolinecolor=COLORS['grey']),
+    margin=dict(t=50, b=40, l=40, r=20)
+)
+
+# ── Load data ─────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    df = pd.read_csv(
-        DATA_PATH,
-        parse_dates=['Order Date', 'Ship Date']
-    )
-    df['Year'] = df['Order Date'].dt.year
-    df['Month'] = df['Order Date'].dt.to_period('M').astype(str)
-    df['Discount Band'] = pd.cut(
-        df['Discount'],
-        bins=[-0.01, 0, 0.2, 0.4, 0.8],
-        labels=['No Discount', 'Low (1–20%)', 'Mid (21–40%)', 'High (41–80%)']
-    )
+    df = pd.read_csv("01_raw_data/Sample - Superstore.csv", encoding='latin1')
+    df['Order Date'] = pd.to_datetime(df['Order Date'])
+    df['Ship Date']  = pd.to_datetime(df['Ship Date'])
+    df['Year']       = df['Order Date'].dt.year
+    df['Month']      = df['Order Date'].dt.to_period('M').astype(str)
+    df['Disc_Bin']   = pd.cut(df['Discount'],
+                               bins=[-0.01, 0, 0.2, 0.4, 0.6, 0.8],
+                               labels=['0%', '1–20%', '21–40%', '41–60%', '61–80%'])
     return df
 
 df = load_data()
 
-# ── Sidebar filters ──────────────────────────────────────────────────────────
-st.sidebar.header("Filters")
+# ── Sidebar filters ───────────────────────────────────────────────
+st.sidebar.title("🔍 Filters")
+years     = sorted(df['Year'].unique())
+regions   = sorted(df['Region'].unique())
+segments  = sorted(df['Segment'].unique())
+cats      = sorted(df['Category'].unique())
 
-years = sorted(df['Year'].unique())
-selected_years = st.sidebar.multiselect("Year", years, default=years)
-
-regions = sorted(df['Region'].unique())
-selected_regions = st.sidebar.multiselect("Region", regions, default=regions)
-
-segments = sorted(df['Segment'].unique())
-selected_segments = st.sidebar.multiselect("Segment", segments, default=segments)
-
-categories = sorted(df['Category'].unique())
-selected_categories = st.sidebar.multiselect("Category", categories, default=categories)
+sel_years    = st.sidebar.multiselect("Year",     years,    default=years)
+sel_regions  = st.sidebar.multiselect("Region",   regions,  default=regions)
+sel_segments = st.sidebar.multiselect("Segment",  segments, default=segments)
+sel_cats     = st.sidebar.multiselect("Category", cats,     default=cats)
 
 mask = (
-    df['Year'].isin(selected_years) &
-    df['Region'].isin(selected_regions) &
-    df['Segment'].isin(selected_segments) &
-    df['Category'].isin(selected_categories)
+    df['Year'].isin(sel_years) &
+    df['Region'].isin(sel_regions) &
+    df['Segment'].isin(sel_segments) &
+    df['Category'].isin(sel_cats)
 )
-filtered = df[mask]
+fdf = df[mask]
 
-# ── Header ───────────────────────────────────────────────────────────────────
-st.title("Superstore Sales Dashboard")
-st.caption(f"Showing {len(filtered):,} of {len(df):,} orders · {filtered['Order Date'].min().date()} → {filtered['Order Date'].max().date()}")
+# ── Header ────────────────────────────────────────────────────────
+st.title("📊 Superstore Sales Dashboard")
+st.markdown("Interactive analytics across sales, profit, discounts, and geography.")
+st.markdown("---")
 
-# ── KPI cards ────────────────────────────────────────────────────────────────
-k1, k2, k3, k4, k5 = st.columns(5)
+# ── KPI cards ─────────────────────────────────────────────────────
+total_sales   = fdf['Sales'].sum()
+total_profit  = fdf['Profit'].sum()
+total_orders  = fdf['Order ID'].nunique()
+avg_margin    = total_profit / total_sales * 100 if total_sales else 0
+total_qty     = fdf['Quantity'].sum()
 
-total_sales   = filtered['Sales'].sum()
-total_profit  = filtered['Profit'].sum()
-margin        = total_profit / total_sales * 100 if total_sales else 0
-total_orders  = filtered['Order ID'].nunique()
-total_customers = filtered['Customer ID'].nunique()
+c1, c2, c3, c4, c5 = st.columns(5)
+def kpi(col, label, value, note=""):
+    col.markdown(f"""
+    <div class="metric-card">
+        <h3>{label}</h3>
+        <p>{value}</p>
+        <small>{note}</small>
+    </div>""", unsafe_allow_html=True)
 
-k1.metric("Total Sales",     f"${total_sales:,.0f}")
-k2.metric("Total Profit",    f"${total_profit:,.0f}")
-k3.metric("Profit Margin",   f"{margin:.1f}%")
-k4.metric("Orders",          f"{total_orders:,}")
-k5.metric("Customers",       f"{total_customers:,}")
+kpi(c1, "Total Sales",   f"${total_sales:,.0f}",  f"{len(fdf):,} rows")
+kpi(c2, "Total Profit",  f"${total_profit:,.0f}", f"{avg_margin:.1f}% margin")
+kpi(c3, "Orders",        f"{total_orders:,}",     "unique order IDs")
+kpi(c4, "Units Sold",    f"{total_qty:,}",        "total quantity")
+kpi(c5, "Avg Order Value", f"${total_sales/total_orders:,.0f}" if total_orders else "$0", "per order")
 
-st.divider()
+st.markdown("---")
 
-# ── Row 1: Trend + Category ──────────────────────────────────────────────────
-col1, col2 = st.columns([3, 2])
+# ── Row 1: Category margin | Discount impact ─────────────────────
+col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Sales & Profit Trend")
-    yr = filtered.groupby('Year').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(x=yr['Year'], y=yr['Sales'], name='Sales', marker_color='#4C72B0', opacity=0.8), secondary_y=False)
-    fig.add_trace(go.Scatter(x=yr['Year'], y=yr['Profit'], name='Profit', mode='lines+markers', line=dict(color='#2CA02C', width=3)), secondary_y=True)
-    fig.update_yaxes(tickprefix='$', tickformat=',.0f', secondary_y=False)
-    fig.update_yaxes(tickprefix='$', tickformat=',.0f', secondary_y=True)
-    fig.update_layout(height=350, legend=dict(orientation='h', y=1.1), margin=dict(t=10, b=0))
+    st.subheader("Insight 1 — Profit Margin by Category")
+    cat_df = fdf.groupby('Category').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
+    cat_df['Margin%'] = (cat_df['Profit'] / cat_df['Sales'] * 100).round(1)
+    cat_df = cat_df.sort_values('Margin%')
+
+    fig = go.Figure(go.Bar(
+        x=cat_df['Margin%'], y=cat_df['Category'], orientation='h',
+        marker_color=[COLORS['coral'], COLORS['teal'], COLORS['green']],
+        text=[f"{v}%" for v in cat_df['Margin%']], textposition='outside'
+    ))
+    fig.update_layout(title="Profit Margin % by Category", xaxis_title="Margin (%)", **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.subheader("Sales by Category")
-    cat = filtered.groupby('Category').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
-    cat['Margin%'] = (cat['Profit'] / cat['Sales'] * 100).round(1)
-    fig = px.bar(
-        cat.sort_values('Sales'),
-        x='Sales', y='Category', orientation='h',
-        color='Margin%',
-        color_continuous_scale=['#DD4444', '#f5c842', '#2CA02C'],
-        text=cat['Margin%'].apply(lambda x: f'{x}% margin'),
-        height=350,
-    )
-    fig.update_traces(textposition='inside')
-    fig.update_layout(margin=dict(t=10, b=0), coloraxis_colorbar=dict(title='Margin %'))
-    fig.update_xaxes(tickprefix='$', tickformat=',.0f')
+    st.subheader("Insight 2 — Discount Destroys Profit")
+    disc_df = fdf.groupby('Disc_Bin')['Profit'].mean().reset_index()
+    disc_df.columns = ['Discount Range', 'Avg Profit']
+    disc_df['color'] = disc_df['Avg Profit'].apply(lambda v: COLORS['green'] if v >= 0 else COLORS['coral'])
+
+    fig = go.Figure(go.Bar(
+        x=disc_df['Discount Range'], y=disc_df['Avg Profit'],
+        marker_color=disc_df['color'],
+        text=[f"${v:.0f}" for v in disc_df['Avg Profit']], textposition='outside'
+    ))
+    fig.add_hline(y=0, line_color=COLORS['white'], line_width=1)
+    fig.update_layout(title="Avg Profit per Order by Discount Band", yaxis_title="Avg Profit ($)", **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
-# ── Row 2: Sub-category + Discount impact ────────────────────────────────────
-col3, col4 = st.columns([3, 2])
+# ── Row 2: Sub-category | Region ─────────────────────────────────
+col3, col4 = st.columns(2)
 
 with col3:
-    st.subheader("Profit by Sub-Category")
-    sub = filtered.groupby('Sub-Category')['Profit'].sum().reset_index().sort_values('Profit')
-    sub['Color'] = sub['Profit'].apply(lambda x: '#DD4444' if x < 0 else '#2CA02C')
-    fig = px.bar(
-        sub, x='Profit', y='Sub-Category', orientation='h',
-        color='Color', color_discrete_map='identity',
-        height=420,
-    )
-    fig.update_layout(showlegend=False, margin=dict(t=10, b=0))
-    fig.update_xaxes(tickprefix='$', tickformat=',.0f')
-    fig.add_vline(x=0, line_color='black', line_width=1)
+    st.subheader("Insight 3 — Sub-Category Profit")
+    sub_df = fdf.groupby('Sub-Category')['Profit'].sum().reset_index().sort_values('Profit')
+    sub_df['color'] = sub_df['Profit'].apply(lambda v: COLORS['coral'] if v < 0 else COLORS['teal'])
+
+    fig = go.Figure(go.Bar(
+        x=sub_df['Profit'], y=sub_df['Sub-Category'], orientation='h',
+        marker_color=sub_df['color'],
+        text=[f"${v:,.0f}" for v in sub_df['Profit']], textposition='outside'
+    ))
+    fig.add_vline(x=0, line_color=COLORS['white'], line_width=1)
+    fig.update_layout(title="Total Profit by Sub-Category", xaxis_title="Profit ($)",
+                      height=500, **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
 with col4:
-    st.subheader("Discount Impact on Profit")
-    disc = filtered.groupby('Discount Band', observed=True)['Profit'].mean().reset_index()
-    disc['Color'] = disc['Profit'].apply(lambda x: '#DD4444' if x < 0 else '#2CA02C')
-    fig = px.bar(
-        disc, x='Discount Band', y='Profit',
-        color='Color', color_discrete_map='identity',
-        text=disc['Profit'].apply(lambda x: f'${x:.0f}'),
-        height=420,
-    )
-    fig.update_traces(textposition='outside')
-    fig.update_layout(showlegend=False, margin=dict(t=10, b=0))
-    fig.update_yaxes(tickprefix='$', tickformat=',.0f', title='Avg Profit per Order')
-    fig.add_hline(y=0, line_color='black', line_width=1)
+    st.subheader("Insight 4 — Region Performance")
+    reg_df = fdf.groupby('Region').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
+    reg_df['Margin%'] = (reg_df['Profit'] / reg_df['Sales'] * 100).round(1)
+    reg_df = reg_df.sort_values('Margin%', ascending=False)
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Bar(
+        name='Sales', x=reg_df['Region'], y=reg_df['Sales'],
+        marker_color=COLORS['teal'],
+        text=[f"${v/1000:.0f}K" for v in reg_df['Sales']], textposition='outside'
+    ), secondary_y=False)
+    fig.add_trace(go.Scatter(
+        name='Margin %', x=reg_df['Region'], y=reg_df['Margin%'],
+        mode='lines+markers+text', line_color=COLORS['yellow'],
+        marker_size=10, text=[f"{v}%" for v in reg_df['Margin%']],
+        textposition='top center'
+    ), secondary_y=True)
+    fig.update_layout(title="Sales & Profit Margin by Region",
+                      height=500, **PLOTLY_LAYOUT)
+    fig.update_yaxes(title_text="Sales ($)", secondary_y=False,
+                     gridcolor='#3a3a4e', color=COLORS['white'])
+    fig.update_yaxes(title_text="Margin (%)", secondary_y=True,
+                     gridcolor='#3a3a4e', color=COLORS['white'])
     st.plotly_chart(fig, use_container_width=True)
 
-# ── Row 3: Region + Segment ───────────────────────────────────────────────────
+# ── Row 3: YoY growth | Monthly trend ────────────────────────────
 col5, col6 = st.columns(2)
 
 with col5:
-    st.subheader("Performance by Region")
-    reg = filtered.groupby('Region').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
-    reg['Margin%'] = (reg['Profit'] / reg['Sales'] * 100).round(1)
-    fig = px.scatter(
-        reg, x='Sales', y='Profit', size='Sales', color='Region',
-        text='Region', hover_data={'Margin%': True},
-        height=320,
-    )
-    fig.update_traces(textposition='top center')
-    fig.update_layout(margin=dict(t=10, b=0), showlegend=False)
-    fig.update_xaxes(tickprefix='$', tickformat=',.0f')
-    fig.update_yaxes(tickprefix='$', tickformat=',.0f')
+    st.subheader("Insight 5 — Year-over-Year Growth")
+    yoy = fdf.groupby('Year').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
+    yoy['Sales_Growth%']  = yoy['Sales'].pct_change().mul(100).round(1)
+    yoy['Profit_Growth%'] = yoy['Profit'].pct_change().mul(100).round(1)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=yoy['Year'], y=yoy['Sales_Growth%'], name='Sales Growth %',
+        mode='lines+markers+text', line_color=COLORS['teal'],
+        marker_size=10, text=[f"{v}%" if pd.notna(v) else "" for v in yoy['Sales_Growth%']],
+        textposition='top center'
+    ))
+    fig.add_trace(go.Scatter(
+        x=yoy['Year'], y=yoy['Profit_Growth%'], name='Profit Growth %',
+        mode='lines+markers+text', line_color=COLORS['yellow'],
+        marker_size=10, text=[f"{v}%" if pd.notna(v) else "" for v in yoy['Profit_Growth%']],
+        textposition='bottom center'
+    ))
+    fig.add_hline(y=0, line_color=COLORS['grey'], line_dash='dash')
+    fig.update_layout(title="Year-over-Year Sales & Profit Growth",
+                      xaxis_title="Year", yaxis_title="Growth (%)", **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
 with col6:
-    st.subheader("Sales by Customer Segment")
-    seg = filtered.groupby('Segment').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
-    seg['Margin%'] = (seg['Profit'] / seg['Sales'] * 100).round(1)
-    fig = px.pie(
-        seg, values='Sales', names='Segment',
-        hole=0.45,
-        color_discrete_sequence=px.colors.qualitative.Set2,
-        height=320,
-    )
-    fig.update_traces(textinfo='label+percent', textposition='outside')
-    fig.update_layout(margin=dict(t=10, b=0), showlegend=False)
+    st.subheader("Bonus — Monthly Sales Trend")
+    monthly = fdf.groupby('Month').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=monthly['Month'], y=monthly['Sales'], name='Sales',
+        mode='lines', line=dict(color=COLORS['teal'], width=2), fill='tozeroy',
+        fillcolor='rgba(78,205,196,0.15)'
+    ))
+    fig.add_trace(go.Scatter(
+        x=monthly['Month'], y=monthly['Profit'], name='Profit',
+        mode='lines', line=dict(color=COLORS['yellow'], width=2)
+    ))
+    fig.update_layout(title="Monthly Sales & Profit Over Time",
+                      xaxis_title="Month", yaxis_title="Amount ($)",
+                      xaxis_tickangle=-45, **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
-# ── Row 4: Top states + Top customers ────────────────────────────────────────
+# ── Row 4: Segment breakdown | State map ─────────────────────────
 col7, col8 = st.columns(2)
 
 with col7:
-    st.subheader("Top 10 States by Sales")
-    states = filtered.groupby('State')['Sales'].sum().reset_index().sort_values('Sales', ascending=False).head(10)
-    fig = px.bar(
-        states.sort_values('Sales'), x='Sales', y='State', orientation='h',
-        color='Sales', color_continuous_scale='Blues',
-        height=360,
-    )
-    fig.update_layout(margin=dict(t=10, b=0), coloraxis_showscale=False)
-    fig.update_xaxes(tickprefix='$', tickformat=',.0f')
+    st.subheader("Segment Performance")
+    seg_df = fdf.groupby('Segment').agg(
+        Sales=('Sales','sum'), Profit=('Profit','sum'), Orders=('Order ID','nunique')
+    ).reset_index()
+    seg_df['Margin%'] = (seg_df['Profit'] / seg_df['Sales'] * 100).round(1)
+
+    fig = px.bar(seg_df, x='Segment', y=['Sales', 'Profit'],
+                 barmode='group', color_discrete_sequence=[COLORS['teal'], COLORS['coral']])
+    fig.update_layout(title="Sales vs Profit by Segment",
+                      yaxis_title="Amount ($)", **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
 with col8:
-    st.subheader("Top 10 Customers by Sales")
-    customers = filtered.groupby('Customer Name').agg(Sales=('Sales','sum'), Profit=('Profit','sum')).reset_index()
-    customers = customers.sort_values('Sales', ascending=False).head(10)
-    customers['Margin%'] = (customers['Profit'] / customers['Sales'] * 100).round(1)
-    fig = px.bar(
-        customers.sort_values('Sales'), x='Sales', y='Customer Name', orientation='h',
-        color='Margin%',
-        color_continuous_scale=['#DD4444', '#f5c842', '#2CA02C'],
-        height=360,
+    st.subheader("Profit by State")
+    state_df = fdf.groupby('State')['Profit'].sum().reset_index()
+
+    fig = px.choropleth(
+        state_df, locations='State', locationmode='USA-states',
+        color='Profit', scope='usa',
+        color_continuous_scale=['#ff6b6b', '#1e1e2e', '#4ecdc4'],
+        color_continuous_midpoint=0,
+        labels={'Profit': 'Profit ($)'}
     )
-    fig.update_layout(margin=dict(t=10, b=0))
-    fig.update_xaxes(tickprefix='$', tickformat=',.0f')
+    fig.update_layout(title="Profit by State", geo_bgcolor=COLORS['bg'],
+                      **PLOTLY_LAYOUT)
     st.plotly_chart(fig, use_container_width=True)
 
-# ── Footer ────────────────────────────────────────────────────────────────────
-st.divider()
-st.caption("Data source: Sample - Superstore.xlsx · Cleaned & analysed with Python/Pandas")
+# ── Raw data explorer ─────────────────────────────────────────────
+st.markdown("---")
+with st.expander("🔎 Explore Raw Data"):
+    st.dataframe(
+        fdf[['Order Date','Category','Sub-Category','Region','Segment',
+             'Sales','Quantity','Discount','Profit']].sort_values('Order Date', ascending=False),
+        use_container_width=True, height=300
+    )
+    st.caption(f"{len(fdf):,} rows shown based on current filters.")
