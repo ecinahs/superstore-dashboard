@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DA & DG Quiz</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      max-width: 680px;
+      width: 100%;
+      padding: 36px 40px;
+    }
+
+    h1 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 4px; }
+    .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 28px; }
+
+    /* Name screen */
+    .name-screen label { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; }
+    .name-screen input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #111827;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 20px;
+    }
+    .name-screen input:focus { border-color: #6366f1; }
+
+    .start-btn {
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 32px;
+      font-size: 0.97rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .start-btn:hover { background: #4f46e5; }
+    .start-btn:disabled { background: #c7d2fe; cursor: not-allowed; }
+
+    /* Progress */
+    .progress { display: flex; gap: 8px; margin-bottom: 28px; }
+    .progress-dot {
+      height: 6px; flex: 1; border-radius: 4px;
+      background: #e5e7eb; transition: background 0.3s;
+    }
+    .progress-dot.active { background: #6366f1; }
+    .progress-dot.done   { background: #10b981; }
+    .progress-dot.wrong  { background: #ef4444; }
+
+    .team-badge {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 3px 10px; border-radius: 99px; margin-bottom: 12px;
+    }
+    .team-DA { background: #ede9fe; color: #6d28d9; }
+    .team-DG { background: #dbeafe; color: #1d4ed8; }
+
+    .q-number { font-size: 0.8rem; color: #9ca3af; margin-bottom: 6px; }
+    .q-text {
+      font-size: 1.05rem; color: #111827;
+      line-height: 1.55; margin-bottom: 22px; white-space: pre-wrap;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: #f9fafb; border: 2px solid #e5e7eb;
+      border-radius: 10px; padding: 13px 16px;
+      text-align: left; cursor: pointer;
+      font-size: 0.95rem; color: #374151;
+      transition: border-color 0.2s, background 0.2s; line-height: 1.4;
+    }
+    .option-btn:hover:not(:disabled) { border-color: #6366f1; background: #eef2ff; }
+    .option-btn.correct  { border-color: #10b981; background: #d1fae5; color: #065f46; }
+    .option-btn.wrong    { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+    .option-btn.reveal-correct { border-color: #10b981; background: #d1fae5; color: #065f46; }
+
+    .feedback { margin-top: 16px; font-size: 0.92rem; font-weight: 500; min-height: 24px; }
+    .feedback.correct-msg { color: #059669; }
+    .feedback.wrong-msg   { color: #dc2626; }
+
+    .next-btn {
+      margin-top: 22px; background: #6366f1; color: #fff;
+      border: none; border-radius: 10px; padding: 13px 28px;
+      font-size: 0.97rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; display: none;
+    }
+    .next-btn:hover { background: #4f46e5; }
+
+    /* Result */
+    .result { text-align: center; }
+    .score-ring {
+      width: 110px; height: 110px; border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem; font-weight: 700; color: #fff;
+    }
+    .score-perfect { background: linear-gradient(135deg, #10b981, #059669); }
+    .score-good    { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+    .score-ok      { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .score-low     { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .result h2 { font-size: 1.4rem; color: #1f2937; margin-bottom: 8px; }
+    .result p  { color: #6b7280; margin-bottom: 24px; }
+
+    .saving-msg { font-size: 0.85rem; color: #6b7280; margin-bottom: 12px; }
+
+    .review { text-align: left; margin-top: 20px; }
+    .review-item {
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;
+    }
+    .review-item.correct-item { background: #d1fae5; border-left: 4px solid #10b981; }
+    .review-item.wrong-item   { background: #fee2e2; border-left: 4px solid #ef4444; }
+    .review-item .q-label     { font-weight: 600; color: #374151; margin-bottom: 4px; }
+    .review-item .correct-a   { color: #065f46; font-weight: 600; }
+
+    .retry-btn {
+      background: #6366f1; color: #fff; border: none;
+      border-radius: 10px; padding: 13px 32px;
+      font-size: 0.97rem; font-weight: 600; cursor: pointer;
+      margin-top: 8px; transition: background 0.2s;
+    }
+    .retry-btn:hover { background: #4f46e5; }
+  </style>
+</head>
+<body>
+<div class="card" id="app"></div>
+
+<script>
+// ── IMPORTANT: Replace this URL after setting up Google Apps Script ──────────
+const SCORE_WEBHOOK = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DA_QUESTIONS = [
+  {
+    team: "DA",
+    text: "What does R in Carat Process Stand for?",
+    options: ["Review", "Relate", "Refine", "Revamp"],
+    answer: 2
+  },
+  {
+    team: "DA",
+    text: "Which of the following is NOT one of the 5 key questions for defining a problem statement?",
+    options: [
+      "Who are being affected?",
+      "What are the pain points faced?",
+      "How much will it cost to solve?",
+      "What are the consequences if we continue with the current situation?"
+    ],
+    answer: 2
+  },
+  {
+    team: "DA",
+    text: "Which of the following best describes the key difference between structured and unstructured data?",
+    options: [
+      "Structured data is always clean, while unstructured data is always dirty.",
+      "Structured data has neat rows and columns with defined data types, while unstructured data comes in various formats without standard structure.",
+      "Structured data is only numerical, while unstructured data is only text.",
+      "Structured data requires advanced tools, while unstructured data is easy to analyse."
+    ],
+    answer: 1
+  },
+  {
+    team: "DA",
+    text: "A dataset contains the same customer appearing multiple times due to entries from different systems and repeated manual data entry. What type of data quality issue is this?",
+    options: ["Inconsistent Data", "Missing Data", "Duplicated Data", "Outliers"],
+    answer: 2
+  },
+  {
+    team: "DA",
+    text: "You discover abnormally high values in your sales dataset. Some appear to be data entry errors (missing decimal points), while others represent legitimate but rare high-value transactions. What should you do?",
+    options: [
+      "Detect and correct the errors, then analyse whether valid extremes should be included.",
+      "Keep all values since they're in the original dataset.",
+      "Remove all high values to maintain consistency.",
+      "Replace all high values with the dataset mean."
+    ],
+    answer: 0
+  },
+  {
+    team: "DA",
+    text: "A survey was conducted among 1,000 respondents to understand satisfaction with your product. Satisfaction increased from 87% to 90%, with the improvement being statistically significant at 95% confidence interval. What does this mean?",
+    options: [
+      "The improvement in satisfaction is statistically significant only within a margin of error of +/-5%.",
+      "The calculated confidence interval provides a range within which the true improvement in satisfaction likely lies, such as from 1.2% to 4.8%.",
+      "The observed improvement of 3 percentage points is guaranteed to be accurate 95% of the time.",
+      "Even if the survey was repeated many times, we can be 95% confident that this range will contain the true improvement in satisfaction."
+    ],
+    answer: 3
+  },
+  {
+    team: "DA",
+    text: "What is the most appropriate method for handling missing numerical values in a dataset that you need to analyse?",
+    options: [
+      "Delete the rows with missing values",
+      "Replace the missing values with zero",
+      "Replace missing values with the appropriate value (i.e. mean or median)",
+      "If the number of missing values is small, avoid manipulating the dataset and leave them as they are"
+    ],
+    answer: 2
+  },
+  {
+    team: "DA",
+    text: "Elderly face rising phishing scams due to low digital literacy. Which problem statement best addresses protecting them from fraudulent emails?",
+    options: [
+      "How might we improve government-private sector coordination to better protect elderly individuals from phishing scams?",
+      "How might we improve digital literacy among elderly individuals to help them recognize and avoid phishing scams?",
+      "How might we develop software or tools that automatically identify and block phishing emails targeting elderly individuals?",
+      "How might we establish a clear process for elderly individuals to report suspected phishing scams to authorities?"
+    ],
+    answer: 1
+  },
+  {
+    team: "DA",
+    text: "In a survey of 100 households, a government agency collected data on the number of devices connected to the internet in each household. The data showed 5 households had significantly more devices than the majority, resulting in some outliers. Which statistic would best represent the central tendency of the data in this situation, and why?",
+    options: [
+      "Median, because it is less affected by outliers and represents the middle of the distribution.",
+      "Mean, because it takes into account all values and provides an overall average",
+      "Mode, because it identifies the most common number of connected devices",
+      "Range, because it shows the spread between the highest and lowest number of devices"
+    ],
+    answer: 0
+  }
+];
+
+const DG_QUESTIONS = [
+  {
+    team: "DG",
+    text: "I want to get some data from another public agency. Where can I find such data?",
+    options: ["SGDI", "DataHive", "IM8", "AIBots"],
+    answer: 1
+  },
+  {
+    team: "DG",
+    text: "Who is accountable for the data quality of a dataset?",
+    options: ["Data analyst", "IT department", "Data requestor", "Data owner"],
+    answer: 3
+  },
+  {
+    team: "DG",
+    text: "You are merging datasets from 3 agencies.\n\nAgency A uses \"M/F\", Agency B uses \"Male/Female\", Agency C uses \"1/0\" for gender. This is primarily a problem with:",
+    options: ["Data accuracy", "Data standardisation", "Data completeness", "Data security"],
+    answer: 1
+  },
+  {
+    team: "DG",
+    text: "What is the main purpose of classifying data?",
+    options: [
+      "To determine the appropriate level of security and handling",
+      "To make data look more important",
+      "To decide which data to delete",
+      "To assign data to different departments"
+    ],
+    answer: 0
+  },
+  {
+    team: "DG",
+    text: "Under what circumstances is data classified as Sensitive (Normal)? When the unauthorised disclosure of data results in…",
+    options: [
+      "No damage to individual or entity",
+      "Sustained financial loss",
+      "Some temporary and minor emotional distress",
+      "Loss of life"
+    ],
+    answer: 2
+  },
+  {
+    team: "DG",
+    text: "When using public Internet-based SaaS or generative AI tools (e.g. Canva, Mentimeter, ChatGPT), what is the highest data classification level you are permitted to use?",
+    options: [
+      "Restricted / Sensitive-Normal",
+      "Confidential / Sensitive-Normal",
+      "Official (Closed) / Non-Sensitive",
+      "Secret / Sensitive-High"
+    ],
+    answer: 2
+  },
+  {
+    team: "DG",
+    text: "When can personal data be shared with external parties?",
+    options: [
+      "Whenever it's convenient for operations",
+      "Only with proper consent or legal basis, and appropriate safeguards",
+      "When the external party promises to keep it safe",
+      "After removing just the names and contact details"
+    ],
+    answer: 1
+  },
+  {
+    team: "DG",
+    text: "Before sending sensitive classified information to external vendors, officers should first…",
+    options: [
+      "Decide on mode of transfer (e.g. encrypted email, secure file transfer etc)",
+      "Create backup copies",
+      "Sanitise and declassify content",
+      "Implement access and retention controls for the shared data"
+    ],
+    answer: 2
+  },
+  {
+    team: "DG",
+    text: "When individuals request access to their personal data, agencies must provide a response within:",
+    options: ["14 calendar days", "21 calendar days", "30 calendar days", "60 calendar days"],
+    answer: 2
+  },
+  {
+    team: "DG",
+    text: "A member of public complains that their address in your system is outdated. This is primarily a problem with which data quality dimension?",
+    options: ["Accuracy", "Timeliness", "Completeness", "Integrity"],
+    answer: 1
+  },
+  {
+    team: "DG",
+    text: "Which data quality dimension would be most affected if your agency's system shows someone's age as 150 years old?",
+    options: ["Completeness", "Accuracy", "Consistency", "Timeliness"],
+    answer: 1
+  }
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestions() {
+  const da = shuffle(DA_QUESTIONS).slice(0, 2);
+  const dg = shuffle(DG_QUESTIONS).slice(0, 2);
+  return shuffle([...da, ...dg]);
+}
+
+let questions = [], current = 0, score = 0, answered = false, results = [], userName = "";
+
+function init() {
+  questions = []; current = 0; score = 0; answered = false; results = []; userName = "";
+  renderNameScreen();
+}
+
+function renderNameScreen() {
+  document.getElementById('app').innerHTML = `
+    <h1>DA & DG Quiz</h1>
+    <p class="subtitle">4 random questions · 2 from DA · 2 from DG</p>
+    <div class="name-screen">
+      <label for="nameInput">Enter your name to begin</label>
+      <input id="nameInput" type="text" placeholder="e.g. Jane Tan" autocomplete="off"
+        oninput="document.getElementById('startBtn').disabled = this.value.trim().length < 2"
+        onkeydown="if(event.key==='Enter' && this.value.trim().length >= 2) startQuiz()" />
+      <button class="start-btn" id="startBtn" disabled onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  `;
+  document.getElementById('nameInput').focus();
+}
+
+function startQuiz() {
+  userName = document.getElementById('nameInput').value.trim();
+  if (!userName) return;
+  questions = pickQuestions();
+  current = 0; score = 0; answered = false; results = [];
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const app = document.getElementById('app');
+  const q   = questions[current];
+  const labels = ['a', 'b', 'c', 'd'];
+
+  app.innerHTML = `
+    <h1>DA & DG Quiz</h1>
+    <p class="subtitle">Hi <strong>${userName}</strong> · Score out of 4</p>
+    <div class="progress">
+      ${questions.map((_, i) => {
+        let cls = 'progress-dot';
+        if (i < current) cls += results[i] ? ' done' : ' wrong';
+        else if (i === current) cls += ' active';
+        return `<div class="${cls}"></div>`;
+      }).join('')}
+    </div>
+    <span class="team-badge team-${q.team}">${q.team} Team</span>
+    <div class="q-number">Question ${current + 1} of ${questions.length}</div>
+    <div class="q-text">${q.text}</div>
+    <div class="options" id="options">
+      ${q.options.map((opt, i) => `
+        <button class="option-btn" onclick="selectAnswer(${i})">
+          <strong>${labels[i]})</strong>&nbsp; ${opt}
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+      ${current < questions.length - 1 ? 'Next Question →' : 'See Results'}
+    </button>
+  `;
+}
+
+function selectAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const correct = q.answer;
+  const btns = document.querySelectorAll('.option-btn');
+  const fb   = document.getElementById('feedback');
+  btns.forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    btns[chosen].classList.add('correct');
+    fb.textContent = '✓ Correct!';
+    fb.className = 'feedback correct-msg';
+    score++;
+    results.push(true);
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[correct].classList.add('reveal-correct');
+    fb.textContent = `✗ Incorrect. Correct answer: ${['a','b','c','d'][correct]}) ${q.options[correct]}`;
+    fb.className = 'feedback wrong-msg';
+    results.push(false);
+  }
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  answered = false;
+  current++;
+  if (current < questions.length) renderQuestion();
+  else renderResult();
+}
+
+async function submitScore() {
+  if (SCORE_WEBHOOK === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return;
+  const payload = {
+    name:      userName,
+    score:     score,
+    total:     questions.length,
+    timestamp: new Date().toISOString(),
+    questions: questions.map((q, i) => ({
+      team:    q.team,
+      question: q.text.split('\n')[0].slice(0, 80),
+      correct: results[i]
+    }))
+  };
+  try {
+    await fetch(SCORE_WEBHOOK, {
+      method: "POST",
+      mode:   "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('saving-status').textContent = "✓ Score saved to log.";
+  } catch {
+    document.getElementById('saving-status').textContent = "";
+  }
+}
+
+function renderResult() {
+  const app = document.getElementById('app');
+  const pct = score / questions.length;
+  let ringClass, msg;
+  if (pct === 1)        { ringClass = 'score-perfect'; msg = 'Perfect score! Outstanding!'; }
+  else if (pct >= 0.75) { ringClass = 'score-good';    msg = 'Great job! Almost there!'; }
+  else if (pct >= 0.5)  { ringClass = 'score-ok';      msg = 'Good effort — keep practising!'; }
+  else                  { ringClass = 'score-low';      msg = "Keep going — you'll get there!"; }
+
+  const labels = ['a','b','c','d'];
+  const reviewHTML = questions.map((q, i) => `
+    <div class="review-item ${results[i] ? 'correct-item' : 'wrong-item'}">
+      <div class="q-label">${results[i] ? '✓' : '✗'} Q${i+1}
+        <span class="team-badge team-${q.team}" style="font-size:0.68rem;padding:2px 8px;">${q.team}</span>
+        — ${q.text.split('\n')[0]}
+      </div>
+      <div class="correct-a">Correct answer: ${labels[q.answer]}) ${q.options[q.answer]}</div>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="result">
+      <div class="score-ring ${ringClass}">${score}/4</div>
+      <h2>${msg}</h2>
+      <p><strong>${userName}</strong>, you answered <strong>${score} out of 4</strong> correctly.</p>
+      <div class="saving-msg" id="saving-status">Saving score…</div>
+      <button class="retry-btn" onclick="init()">Try Again with New Questions</button>
+      <div class="review">${reviewHTML}</div>
+      <button class="retry-btn" style="margin-top:16px;" onclick="init()">Try Again with New Questions</button>
+    </div>
+  `;
+
+  submitScore();
+}
+
+init();
+</script>
+</body>
+</html>
