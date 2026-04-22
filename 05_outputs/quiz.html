@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DA & DG Quiz</title>
+  <title>DA, DG & PE Quiz</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -29,38 +29,25 @@
     h1 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 4px; }
     .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 28px; }
 
-    /* Name screen */
     .name-screen label { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; }
     .name-screen input {
-      width: 100%;
-      padding: 13px 16px;
-      border: 2px solid #e5e7eb;
-      border-radius: 10px;
-      font-size: 1rem;
-      color: #111827;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 20px;
+      width: 100%; padding: 13px 16px;
+      border: 2px solid #e5e7eb; border-radius: 10px;
+      font-size: 1rem; color: #111827; outline: none;
+      transition: border-color 0.2s; margin-bottom: 20px;
     }
     .name-screen input:focus { border-color: #6366f1; }
 
     .start-btn {
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 13px 32px;
-      font-size: 0.97rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      width: 100%;
+      background: #6366f1; color: #fff; border: none;
+      border-radius: 10px; padding: 13px 32px;
+      font-size: 0.97rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s; width: 100%;
     }
     .start-btn:hover { background: #4f46e5; }
     .start-btn:disabled { background: #c7d2fe; cursor: not-allowed; }
 
-    /* Progress */
-    .progress { display: flex; gap: 8px; margin-bottom: 28px; }
+    .progress { display: flex; gap: 6px; margin-bottom: 28px; }
     .progress-dot {
       height: 6px; flex: 1; border-radius: 4px;
       background: #e5e7eb; transition: background 0.3s;
@@ -70,31 +57,26 @@
     .progress-dot.wrong  { background: #ef4444; }
 
     .team-badge {
-      display: inline-block;
-      font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.05em;
-      padding: 3px 10px; border-radius: 99px; margin-bottom: 12px;
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.05em; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px;
     }
     .team-DA { background: #ede9fe; color: #6d28d9; }
     .team-DG { background: #dbeafe; color: #1d4ed8; }
+    .team-PE { background: #dcfce7; color: #15803d; }
 
     .q-number { font-size: 0.8rem; color: #9ca3af; margin-bottom: 6px; }
-    .q-text {
-      font-size: 1.05rem; color: #111827;
-      line-height: 1.55; margin-bottom: 22px; white-space: pre-wrap;
-    }
+    .q-text { font-size: 1.05rem; color: #111827; line-height: 1.55; margin-bottom: 22px; white-space: pre-wrap; }
 
     .options { display: flex; flex-direction: column; gap: 10px; }
     .option-btn {
       background: #f9fafb; border: 2px solid #e5e7eb;
-      border-radius: 10px; padding: 13px 16px;
-      text-align: left; cursor: pointer;
-      font-size: 0.95rem; color: #374151;
+      border-radius: 10px; padding: 13px 16px; text-align: left;
+      cursor: pointer; font-size: 0.95rem; color: #374151;
       transition: border-color 0.2s, background 0.2s; line-height: 1.4;
     }
     .option-btn:hover:not(:disabled) { border-color: #6366f1; background: #eef2ff; }
-    .option-btn.correct  { border-color: #10b981; background: #d1fae5; color: #065f46; }
-    .option-btn.wrong    { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+    .option-btn.correct        { border-color: #10b981; background: #d1fae5; color: #065f46; }
+    .option-btn.wrong          { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
     .option-btn.reveal-correct { border-color: #10b981; background: #d1fae5; color: #065f46; }
 
     .feedback { margin-top: 16px; font-size: 0.92rem; font-weight: 500; min-height: 24px; }
@@ -109,13 +91,11 @@
     }
     .next-btn:hover { background: #4f46e5; }
 
-    /* Result */
     .result { text-align: center; }
     .score-ring {
       width: 110px; height: 110px; border-radius: 50%;
-      margin: 0 auto 20px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.4rem; font-weight: 700; color: #fff;
+      margin: 0 auto 20px; display: flex; align-items: center;
+      justify-content: center; font-size: 2.4rem; font-weight: 700; color: #fff;
     }
     .score-perfect { background: linear-gradient(135deg, #10b981, #059669); }
     .score-good    { background: linear-gradient(135deg, #6366f1, #4f46e5); }
@@ -124,7 +104,6 @@
 
     .result h2 { font-size: 1.4rem; color: #1f2937; margin-bottom: 8px; }
     .result p  { color: #6b7280; margin-bottom: 24px; }
-
     .saving-msg { font-size: 0.85rem; color: #6b7280; margin-bottom: 12px; }
 
     .review { text-align: left; margin-top: 20px; }
@@ -150,9 +129,7 @@
 <div class="card" id="app"></div>
 
 <script>
-// ── IMPORTANT: Replace this URL after setting up Google Apps Script ──────────
 const SCORE_WEBHOOK = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
-// ─────────────────────────────────────────────────────────────────────────────
 
 const DA_QUESTIONS = [
   {
@@ -241,6 +218,28 @@ const DA_QUESTIONS = [
       "Mean, because it takes into account all values and provides an overall average",
       "Mode, because it identifies the most common number of connected devices",
       "Range, because it shows the spread between the highest and lowest number of devices"
+    ],
+    answer: 0
+  },
+  {
+    team: "DA",
+    text: "What is the primary purpose of using a heatmap in data visualisation?",
+    options: [
+      "To show the distribution of categorical data",
+      "To represent the frequency of data using colours",
+      "To compare the proportions of parts to a whole",
+      "To visualise time-based trends"
+    ],
+    answer: 1
+  },
+  {
+    team: "DA",
+    text: "Which of the following is an example of primary data?",
+    options: [
+      "Survey responses from participants",
+      "Data from government census reports",
+      "Historical sales data from a company's records",
+      "Web scraping of public information"
     ],
     answer: 0
   }
@@ -340,6 +339,143 @@ const DG_QUESTIONS = [
   }
 ];
 
+const PE_QUESTIONS = [
+  {
+    team: "PE",
+    text: "In the SMART framework, an indicator is considered 'Attainable' if:",
+    options: [
+      "It is written in a way that everyone in the department can understand.",
+      "It includes a specific numerical value and a percentage sign.",
+      "It perfectly aligns with the national high-level strategic goals.",
+      "It can be achieved within the available resources, budget, and timeframe."
+    ],
+    answer: 3
+  },
+  {
+    team: "PE",
+    text: "In a Theory of Change (ToC), what is the primary purpose of identifying 'assumptions'?",
+    options: [
+      "To describe the specific demographic of the target participants.",
+      "To calculate the total budget required for the inputs.",
+      "To list the potential risks that might prevent an activity from leading to an output.",
+      "To define the final long-term impact of the programme."
+    ],
+    answer: 2
+  },
+  {
+    team: "PE",
+    text: "Which of the following is the best example of a 'Specific' indicator in the SMART framework?",
+    options: [
+      "Make the programme as successful as possible for all stakeholders.",
+      "Increase the percentage of residents aged 65+ who can independently use government apps from 40% to 60%.",
+      "Reduce the wait time for citizens at service centers.",
+      "Improve the digital literacy of senior citizens in the next year."
+    ],
+    answer: 1
+  },
+  {
+    team: "PE",
+    text: "What is the key difference between Cost-Effectiveness Analysis (CEA) and Cost-Benefit Analysis (CBA)?",
+    options: [
+      "CEA measures outcomes in natural units (e.g., lives saved), while CBA converts all outcomes into monetary value.",
+      "CEA is used for private sector projects, while CBA is only for government programmes.",
+      "CEA does not consider the cost of the intervention, only the effectiveness.",
+      "CBA is performed before a programme starts, while CEA is only performed after it ends."
+    ],
+    answer: 0
+  },
+  {
+    team: "PE",
+    text: "Which data collection method is characterized by using information originally collected for routine operational or regulatory purposes?",
+    options: [
+      "Randomized Control Trial (RCT)",
+      "Longitudinal Surveys",
+      "Focus Group Discussions",
+      "Administrative Data"
+    ],
+    answer: 3
+  },
+  {
+    team: "PE",
+    text: "When setting a 'Measurable' indicator, why is a 'baseline' necessary?",
+    options: [
+      "To ensure that the budget is spent equally across all months.",
+      "To identify which staff members are responsible for data entry.",
+      "To prove that the programme was designed by experts.",
+      "To determine the starting point so that progress or change can be quantified."
+    ],
+    answer: 3
+  },
+  {
+    team: "PE",
+    text: "In the context of Theory of Change, what is the difference between an 'Output' and an 'Outcome'?",
+    options: [
+      "Outputs are the direct products of activities; Outcomes are the changes that result from those products.",
+      "There is no difference; the terms are used interchangeably in evaluation.",
+      "Outcomes happen during the programme; Outputs happen 5 years later.",
+      "Outputs are qualitative; Outcomes are always quantitative."
+    ],
+    answer: 0
+  },
+  {
+    team: "PE",
+    text: "Which of these is a significant advantage of using Survey Data over Administrative Data?",
+    options: [
+      "It covers the entire population by default.",
+      "It allows evaluators to capture subjective data like attitudes, perceptions, and beliefs.",
+      "It has no risk of 'non-response bias'.",
+      "It is always cheaper and faster to collect."
+    ],
+    answer: 1
+  },
+  {
+    team: "PE",
+    text: "An evaluation finds that a 'Time-based' indicator was missed because the target was set for a date after the programme's funding ended. This is a failure of which SMART component?",
+    options: [
+      "Measurable",
+      "Specific",
+      "Attainable / Relevant",
+      "Technological"
+    ],
+    answer: 2
+  },
+  {
+    team: "PE",
+    text: "When performing an economic evaluation, what is 'Discounting'?",
+    options: [
+      "Ignoring the costs that are too small to measure.",
+      "Reducing the price of the programme for low-income participants.",
+      "Adjusting future costs and benefits to their present-day value.",
+      "The process of removing outliers from a dataset."
+    ],
+    answer: 2
+  },
+  {
+    team: "PE",
+    text: "Which of the following is a 'Predictive' rather than 'Descriptive' use of data in evaluation?",
+    options: [
+      "Reporting that 500 people attended the training last month.",
+      "Using a regression model to estimate which future participants are most likely to drop out.",
+      "Calculating the average satisfaction score from a survey.",
+      "Creating a pie chart of the participants' age groups."
+    ],
+    answer: 1
+  },
+  {
+    team: "PE",
+    text: "When developing a Theory of Change, what is the role of 'Intermediate Outcomes'?",
+    options: [
+      "They are the unexpected negative side effects of a programme.",
+      "They are the physical goods or services delivered directly to the beneficiary.",
+      "They represent the internal administrative steps taken by the project team.",
+      "They act as the necessary preconditions or behavioral changes required to reach the final impact."
+    ],
+    answer: 3
+  }
+];
+
+const TOTAL_QUESTIONS = 6;
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -352,7 +488,8 @@ function shuffle(arr) {
 function pickQuestions() {
   const da = shuffle(DA_QUESTIONS).slice(0, 2);
   const dg = shuffle(DG_QUESTIONS).slice(0, 2);
-  return shuffle([...da, ...dg]);
+  const pe = shuffle(PE_QUESTIONS).slice(0, 2);
+  return shuffle([...da, ...dg, ...pe]);
 }
 
 let questions = [], current = 0, score = 0, answered = false, results = [], userName = "";
@@ -364,8 +501,8 @@ function init() {
 
 function renderNameScreen() {
   document.getElementById('app').innerHTML = `
-    <h1>DA & DG Quiz</h1>
-    <p class="subtitle">4 random questions · 2 from DA · 2 from DG</p>
+    <h1>DA, DG & PE Quiz</h1>
+    <p class="subtitle">6 random questions &nbsp;·&nbsp; 2 from each team &nbsp;·&nbsp; Score out of 6</p>
     <div class="name-screen">
       <label for="nameInput">Enter your name to begin</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane Tan" autocomplete="off"
@@ -391,8 +528,8 @@ function renderQuestion() {
   const labels = ['a', 'b', 'c', 'd'];
 
   app.innerHTML = `
-    <h1>DA & DG Quiz</h1>
-    <p class="subtitle">Hi <strong>${userName}</strong> · Score out of 4</p>
+    <h1>DA, DG & PE Quiz</h1>
+    <p class="subtitle">Hi <strong>${userName}</strong> &nbsp;·&nbsp; Score out of ${TOTAL_QUESTIONS}</p>
     <div class="progress">
       ${questions.map((_, i) => {
         let cls = 'progress-dot';
@@ -454,12 +591,12 @@ async function submitScore() {
   const payload = {
     name:      userName,
     score:     score,
-    total:     questions.length,
+    total:     TOTAL_QUESTIONS,
     timestamp: new Date().toISOString(),
     questions: questions.map((q, i) => ({
-      team:    q.team,
+      team:     q.team,
       question: q.text.split('\n')[0].slice(0, 80),
-      correct: results[i]
+      correct:  results[i]
     }))
   };
   try {
@@ -477,10 +614,10 @@ async function submitScore() {
 
 function renderResult() {
   const app = document.getElementById('app');
-  const pct = score / questions.length;
+  const pct = score / TOTAL_QUESTIONS;
   let ringClass, msg;
   if (pct === 1)        { ringClass = 'score-perfect'; msg = 'Perfect score! Outstanding!'; }
-  else if (pct >= 0.75) { ringClass = 'score-good';    msg = 'Great job! Almost there!'; }
+  else if (pct >= 0.67) { ringClass = 'score-good';    msg = 'Great job! Almost there!'; }
   else if (pct >= 0.5)  { ringClass = 'score-ok';      msg = 'Good effort — keep practising!'; }
   else                  { ringClass = 'score-low';      msg = "Keep going — you'll get there!"; }
 
@@ -497,16 +634,15 @@ function renderResult() {
 
   app.innerHTML = `
     <div class="result">
-      <div class="score-ring ${ringClass}">${score}/4</div>
+      <div class="score-ring ${ringClass}">${score}/${TOTAL_QUESTIONS}</div>
       <h2>${msg}</h2>
-      <p><strong>${userName}</strong>, you answered <strong>${score} out of 4</strong> correctly.</p>
+      <p><strong>${userName}</strong>, you answered <strong>${score} out of ${TOTAL_QUESTIONS}</strong> correctly.</p>
       <div class="saving-msg" id="saving-status">Saving score…</div>
       <button class="retry-btn" onclick="init()">Try Again with New Questions</button>
       <div class="review">${reviewHTML}</div>
       <button class="retry-btn" style="margin-top:16px;" onclick="init()">Try Again with New Questions</button>
     </div>
   `;
-
   submitScore();
 }
 
