@@ -4,477 +4,401 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hatch and Grow 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
     }
 
+    /* Decorative background blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 500px; height: 500px;
+      background: #818cf8;
+      top: -100px; left: -100px;
+    }
+    body::after {
+      width: 400px; height: 400px;
+      background: #a78bfa;
+      bottom: -80px; right: -80px;
+    }
+
+    .branding {
+      text-align: center;
+      margin-bottom: 20px;
+      z-index: 1;
+    }
+    .branding-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .branding-title span { color: #a5b4fc; }
+    .branding-sub {
+      font-size: 0.82rem;
+      color: #a5b4fc;
+      margin-top: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
     .card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
       max-width: 680px;
       width: 100%;
-      padding: 36px 40px;
+      padding: 40px 44px;
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    h1 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 4px; }
-    .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 28px; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-    .name-screen label { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; }
-    .name-screen input {
-      width: 100%; padding: 13px 16px;
-      border: 2px solid #e5e7eb; border-radius: 10px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    /* ── Name Screen ── */
+    .name-hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .name-hero .icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .name-hero h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e1b4b;
+      margin-bottom: 6px;
+    }
+    .name-hero p {
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    .team-pills {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .pill-DA { background: #ede9fe; color: #6d28d9; }
+    .pill-DG { background: #dbeafe; color: #1d4ed8; }
+    .pill-PE { background: #dcfce7; color: #15803d; }
+
+    .input-wrap { position: relative; margin-bottom: 20px; }
+    .input-wrap label {
+      display: block; font-weight: 600; color: #374151;
+      margin-bottom: 8px; font-size: 0.9rem;
+    }
+    .input-wrap input {
+      width: 100%; padding: 14px 18px;
+      border: 2px solid #e5e7eb; border-radius: 12px;
       font-size: 1rem; color: #111827; outline: none;
-      transition: border-color 0.2s; margin-bottom: 20px;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .name-screen input:focus { border-color: #6366f1; }
+    .input-wrap input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+    }
 
     .start-btn {
-      background: #6366f1; color: #fff; border: none;
-      border-radius: 10px; padding: 13px 32px;
-      font-size: 0.97rem; font-weight: 600; cursor: pointer;
-      transition: background 0.2s; width: 100%;
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.01em;
     }
-    .start-btn:hover { background: #4f46e5; }
-    .start-btn:disabled { background: #c7d2fe; cursor: not-allowed; }
+    .start-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(99,102,241,0.5);
+    }
+    .start-btn:active:not(:disabled) { transform: translateY(0); }
+    .start-btn:disabled {
+      background: linear-gradient(135deg, #c7d2fe, #ddd6fe);
+      box-shadow: none; cursor: not-allowed;
+    }
 
-    .progress { display: flex; gap: 6px; margin-bottom: 28px; }
-    .progress-dot {
-      height: 6px; flex: 1; border-radius: 4px;
-      background: #e5e7eb; transition: background 0.3s;
+    /* ── Quiz Screen ── */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
-    .progress-dot.active { background: #6366f1; }
-    .progress-dot.done   { background: #10b981; }
-    .progress-dot.wrong  { background: #ef4444; }
+    .quiz-title { font-size: 0.9rem; font-weight: 700; color: #1e1b4b; }
+    .quiz-counter {
+      font-size: 0.8rem; color: #9ca3af; font-weight: 500;
+      background: #f3f4f6; padding: 4px 12px; border-radius: 99px;
+    }
+
+    .progress-bar-wrap {
+      background: #f3f4f6; border-radius: 99px;
+      height: 8px; margin-bottom: 28px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
     .team-badge {
-      display: inline-block; font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.05em; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.73rem; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px; margin-bottom: 14px;
+      letter-spacing: 0.04em; text-transform: uppercase;
     }
     .team-DA { background: #ede9fe; color: #6d28d9; }
     .team-DG { background: #dbeafe; color: #1d4ed8; }
     .team-PE { background: #dcfce7; color: #15803d; }
 
-    .q-number { font-size: 0.8rem; color: #9ca3af; margin-bottom: 6px; }
-    .q-text { font-size: 1.05rem; color: #111827; line-height: 1.55; margin-bottom: 22px; white-space: pre-wrap; }
+    .q-text {
+      font-size: 1.08rem; color: #111827; line-height: 1.6;
+      margin-bottom: 24px; font-weight: 500; white-space: pre-wrap;
+    }
 
     .options { display: flex; flex-direction: column; gap: 10px; }
-    .option-btn {
-      background: #f9fafb; border: 2px solid #e5e7eb;
-      border-radius: 10px; padding: 13px 16px; text-align: left;
-      cursor: pointer; font-size: 0.95rem; color: #374151;
-      transition: border-color 0.2s, background 0.2s; line-height: 1.4;
-    }
-    .option-btn:hover:not(:disabled) { border-color: #6366f1; background: #eef2ff; }
-    .option-btn.correct        { border-color: #10b981; background: #d1fae5; color: #065f46; }
-    .option-btn.wrong          { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
-    .option-btn.reveal-correct { border-color: #10b981; background: #d1fae5; color: #065f46; }
 
-    .feedback { margin-top: 16px; font-size: 0.92rem; font-weight: 500; min-height: 24px; }
+    .option-btn {
+      background: #fafafa; border: 2px solid #e5e7eb;
+      border-radius: 12px; padding: 14px 18px;
+      text-align: left; cursor: pointer;
+      font-size: 0.95rem; color: #374151;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.18s; line-height: 1.45;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .option-btn .opt-label {
+      font-weight: 700; color: #9ca3af; flex-shrink: 0;
+      font-size: 0.85rem; margin-top: 1px;
+      width: 20px;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #6366f1; background: #eef2ff; color: #1e1b4b;
+    }
+    .option-btn:hover:not(:disabled) .opt-label { color: #6366f1; }
+    .option-btn.correct {
+      border-color: #10b981; background: #ecfdf5; color: #065f46;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .option-btn.correct .opt-label { color: #10b981; }
+    .option-btn.wrong {
+      border-color: #ef4444; background: #fef2f2; color: #991b1b;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+    }
+    .option-btn.wrong .opt-label { color: #ef4444; }
+    .option-btn.reveal-correct {
+      border-color: #10b981; background: #ecfdf5; color: #065f46;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .option-btn.reveal-correct .opt-label { color: #10b981; }
+
+    .feedback {
+      margin-top: 16px; font-size: 0.92rem; font-weight: 600;
+      min-height: 22px; border-radius: 8px; padding: 0;
+    }
     .feedback.correct-msg { color: #059669; }
     .feedback.wrong-msg   { color: #dc2626; }
 
     .next-btn {
-      margin-top: 22px; background: #6366f1; color: #fff;
-      border: none; border-radius: 10px; padding: 13px 28px;
-      font-size: 0.97rem; font-weight: 600; cursor: pointer;
-      transition: background 0.2s; display: none;
+      margin-top: 24px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 32px; font-size: 0.97rem; font-weight: 700;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: none;
     }
-    .next-btn:hover { background: #4f46e5; }
+    .next-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(99,102,241,0.45);
+    }
 
+    /* ── Result Screen ── */
     .result { text-align: center; }
+
+    .score-wrap { margin-bottom: 24px; }
     .score-ring {
-      width: 110px; height: 110px; border-radius: 50%;
-      margin: 0 auto 20px; display: flex; align-items: center;
-      justify-content: center; font-size: 2.4rem; font-weight: 700; color: #fff;
+      width: 130px; height: 130px; border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 2.6rem; font-weight: 800; color: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .score-perfect { background: linear-gradient(135deg, #10b981, #059669); }
-    .score-good    { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-    .score-ok      { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .score-low     { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .score-ring .score-label {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.08em; opacity: 0.85; text-transform: uppercase;
+    }
 
-    .result h2 { font-size: 1.4rem; color: #1f2937; margin-bottom: 8px; }
-    .result p  { color: #6b7280; margin-bottom: 24px; }
-    .saving-msg { font-size: 0.85rem; color: #6b7280; margin-bottom: 12px; }
+    @keyframes popIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      70%  { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
-    .review { text-align: left; margin-top: 20px; }
+    .score-perfect { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 30px rgba(16,185,129,0.4); }
+    .score-good    { background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 8px 30px rgba(99,102,241,0.4); }
+    .score-ok      { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 8px 30px rgba(245,158,11,0.4); }
+    .score-low     { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 8px 30px rgba(239,68,68,0.4); }
+
+    .result h2 { font-size: 1.45rem; font-weight: 800; color: #1e1b4b; margin-bottom: 6px; }
+    .result .result-sub { color: #6b7280; margin-bottom: 28px; font-size: 0.95rem; }
+    .result .result-sub strong { color: #1e1b4b; }
+
+    .saving-msg { font-size: 0.82rem; color: #9ca3af; margin-bottom: 16px; }
+
+    .review { text-align: left; margin-top: 8px; }
+    .review h3 { font-size: 0.85rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+
     .review-item {
-      border-radius: 10px; padding: 14px 16px;
-      margin-bottom: 12px; font-size: 0.9rem; line-height: 1.5;
+      border-radius: 12px; padding: 14px 16px;
+      margin-bottom: 10px; font-size: 0.88rem; line-height: 1.5;
+      display: flex; gap: 12px; align-items: flex-start;
     }
-    .review-item.correct-item { background: #d1fae5; border-left: 4px solid #10b981; }
-    .review-item.wrong-item   { background: #fee2e2; border-left: 4px solid #ef4444; }
-    .review-item .q-label     { font-weight: 600; color: #374151; margin-bottom: 4px; }
-    .review-item .correct-a   { color: #065f46; font-weight: 600; }
+    .review-item.correct-item { background: #ecfdf5; border: 1.5px solid #a7f3d0; }
+    .review-item.wrong-item   { background: #fef2f2; border: 1.5px solid #fecaca; }
+
+    .review-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .review-content .q-label { font-weight: 600; color: #374151; margin-bottom: 3px; }
+    .review-content .q-label .rb { margin-left: 6px; }
+    .review-content .correct-a { color: #065f46; font-weight: 600; font-size: 0.85rem; }
+    .review-content .wrong-item .correct-a { color: #065f46; }
 
     .retry-btn {
-      background: #6366f1; color: #fff; border: none;
-      border-radius: 10px; padding: 13px 32px;
-      font-size: 0.97rem; font-weight: 600; cursor: pointer;
-      margin-top: 8px; transition: background 0.2s;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 12px;
+      padding: 14px 36px; font-size: 0.97rem; font-weight: 700;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-bottom: 24px;
     }
-    .retry-btn:hover { background: #4f46e5; }
+    .retry-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(99,102,241,0.45);
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: rgba(165,180,252,0.6);
+      text-align: center;
+      z-index: 1;
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 999;
+    }
   </style>
 </head>
 <body>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="branding">
+  <div class="branding-title">🌱 Hatch and Grow <span>2026</span></div>
+  <div class="branding-sub">DTO Data Challenge Booth</div>
+</div>
+
 <div class="card" id="app"></div>
+
+<div class="footer">DA &nbsp;·&nbsp; DG &nbsp;·&nbsp; PE &nbsp;·&nbsp; 6 Questions</div>
 
 <script>
 const SCORE_WEBHOOK = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 const DA_QUESTIONS = [
-  {
-    team: "DA",
-    text: "What does R in Carat Process Stand for?",
-    options: ["Review", "Relate", "Refine", "Revamp"],
-    answer: 2
-  },
-  {
-    team: "DA",
-    text: "Which of the following is NOT one of the 5 key questions for defining a problem statement?",
-    options: [
-      "Who are being affected?",
-      "What are the pain points faced?",
-      "How much will it cost to solve?",
-      "What are the consequences if we continue with the current situation?"
-    ],
-    answer: 2
-  },
-  {
-    team: "DA",
-    text: "Which of the following best describes the key difference between structured and unstructured data?",
-    options: [
-      "Structured data is always clean, while unstructured data is always dirty.",
-      "Structured data has neat rows and columns with defined data types, while unstructured data comes in various formats without standard structure.",
-      "Structured data is only numerical, while unstructured data is only text.",
-      "Structured data requires advanced tools, while unstructured data is easy to analyse."
-    ],
-    answer: 1
-  },
-  {
-    team: "DA",
-    text: "A dataset contains the same customer appearing multiple times due to entries from different systems and repeated manual data entry. What type of data quality issue is this?",
-    options: ["Inconsistent Data", "Missing Data", "Duplicated Data", "Outliers"],
-    answer: 2
-  },
-  {
-    team: "DA",
-    text: "You discover abnormally high values in your sales dataset. Some appear to be data entry errors (missing decimal points), while others represent legitimate but rare high-value transactions. What should you do?",
-    options: [
-      "Detect and correct the errors, then analyse whether valid extremes should be included.",
-      "Keep all values since they're in the original dataset.",
-      "Remove all high values to maintain consistency.",
-      "Replace all high values with the dataset mean."
-    ],
-    answer: 0
-  },
-  {
-    team: "DA",
-    text: "A survey was conducted among 1,000 respondents to understand satisfaction with your product. Satisfaction increased from 87% to 90%, with the improvement being statistically significant at 95% confidence interval. What does this mean?",
-    options: [
-      "The improvement in satisfaction is statistically significant only within a margin of error of +/-5%.",
-      "The calculated confidence interval provides a range within which the true improvement in satisfaction likely lies, such as from 1.2% to 4.8%.",
-      "The observed improvement of 3 percentage points is guaranteed to be accurate 95% of the time.",
-      "Even if the survey was repeated many times, we can be 95% confident that this range will contain the true improvement in satisfaction."
-    ],
-    answer: 3
-  },
-  {
-    team: "DA",
-    text: "What is the most appropriate method for handling missing numerical values in a dataset that you need to analyse?",
-    options: [
-      "Delete the rows with missing values",
-      "Replace the missing values with zero",
-      "Replace missing values with the appropriate value (i.e. mean or median)",
-      "If the number of missing values is small, avoid manipulating the dataset and leave them as they are"
-    ],
-    answer: 2
-  },
-  {
-    team: "DA",
-    text: "Elderly face rising phishing scams due to low digital literacy. Which problem statement best addresses protecting them from fraudulent emails?",
-    options: [
-      "How might we improve government-private sector coordination to better protect elderly individuals from phishing scams?",
-      "How might we improve digital literacy among elderly individuals to help them recognize and avoid phishing scams?",
-      "How might we develop software or tools that automatically identify and block phishing emails targeting elderly individuals?",
-      "How might we establish a clear process for elderly individuals to report suspected phishing scams to authorities?"
-    ],
-    answer: 1
-  },
-  {
-    team: "DA",
-    text: "In a survey of 100 households, a government agency collected data on the number of devices connected to the internet in each household. The data showed 5 households had significantly more devices than the majority, resulting in some outliers. Which statistic would best represent the central tendency of the data in this situation, and why?",
-    options: [
-      "Median, because it is less affected by outliers and represents the middle of the distribution.",
-      "Mean, because it takes into account all values and provides an overall average",
-      "Mode, because it identifies the most common number of connected devices",
-      "Range, because it shows the spread between the highest and lowest number of devices"
-    ],
-    answer: 0
-  },
-  {
-    team: "DA",
-    text: "What is the primary purpose of using a heatmap in data visualisation?",
-    options: [
-      "To show the distribution of categorical data",
-      "To represent the frequency of data using colours",
-      "To compare the proportions of parts to a whole",
-      "To visualise time-based trends"
-    ],
-    answer: 1
-  },
-  {
-    team: "DA",
-    text: "Which of the following is an example of primary data?",
-    options: [
-      "Survey responses from participants",
-      "Data from government census reports",
-      "Historical sales data from a company's records",
-      "Web scraping of public information"
-    ],
-    answer: 0
-  }
+  { team:"DA", text:"What does R in Carat Process Stand for?", options:["Review","Relate","Refine","Revamp"], answer:2 },
+  { team:"DA", text:"Which of the following is NOT one of the 5 key questions for defining a problem statement?", options:["Who are being affected?","What are the pain points faced?","How much will it cost to solve?","What are the consequences if we continue with the current situation?"], answer:2 },
+  { team:"DA", text:"Which of the following best describes the key difference between structured and unstructured data?", options:["Structured data is always clean, while unstructured data is always dirty.","Structured data has neat rows and columns with defined data types, while unstructured data comes in various formats without standard structure.","Structured data is only numerical, while unstructured data is only text.","Structured data requires advanced tools, while unstructured data is easy to analyse."], answer:1 },
+  { team:"DA", text:"A dataset contains the same customer appearing multiple times due to entries from different systems and repeated manual data entry. What type of data quality issue is this?", options:["Inconsistent Data","Missing Data","Duplicated Data","Outliers"], answer:2 },
+  { team:"DA", text:"You discover abnormally high values in your sales dataset. Some appear to be data entry errors (missing decimal points), while others represent legitimate but rare high-value transactions. What should you do?", options:["Detect and correct the errors, then analyse whether valid extremes should be included.","Keep all values since they're in the original dataset.","Remove all high values to maintain consistency.","Replace all high values with the dataset mean."], answer:0 },
+  { team:"DA", text:"A survey was conducted among 1,000 respondents to understand satisfaction with your product. Satisfaction increased from 87% to 90%, with the improvement being statistically significant at 95% confidence interval. What does this mean?", options:["The improvement in satisfaction is statistically significant only within a margin of error of +/-5%.","The calculated confidence interval provides a range within which the true improvement in satisfaction likely lies, such as from 1.2% to 4.8%.","The observed improvement of 3 percentage points is guaranteed to be accurate 95% of the time.","Even if the survey was repeated many times, we can be 95% confident that this range will contain the true improvement in satisfaction."], answer:3 },
+  { team:"DA", text:"What is the most appropriate method for handling missing numerical values in a dataset that you need to analyse?", options:["Delete the rows with missing values","Replace the missing values with zero","Replace missing values with the appropriate value (i.e. mean or median)","If the number of missing values is small, avoid manipulating the dataset and leave them as they are"], answer:2 },
+  { team:"DA", text:"Elderly face rising phishing scams due to low digital literacy. Which problem statement best addresses protecting them from fraudulent emails?", options:["How might we improve government-private sector coordination to better protect elderly individuals from phishing scams?","How might we improve digital literacy among elderly individuals to help them recognize and avoid phishing scams?","How might we develop software or tools that automatically identify and block phishing emails targeting elderly individuals?","How might we establish a clear process for elderly individuals to report suspected phishing scams to authorities?"], answer:1 },
+  { team:"DA", text:"In a survey of 100 households, a government agency collected data on the number of devices connected to the internet in each household. The data showed 5 households had significantly more devices than the majority, resulting in some outliers. Which statistic would best represent the central tendency of the data in this situation, and why?", options:["Median, because it is less affected by outliers and represents the middle of the distribution.","Mean, because it takes into account all values and provides an overall average","Mode, because it identifies the most common number of connected devices","Range, because it shows the spread between the highest and lowest number of devices"], answer:0 },
+  { team:"DA", text:"What is the primary purpose of using a heatmap in data visualisation?", options:["To show the distribution of categorical data","To represent the frequency of data using colours","To compare the proportions of parts to a whole","To visualise time-based trends"], answer:1 },
+  { team:"DA", text:"Which of the following is an example of primary data?", options:["Survey responses from participants","Data from government census reports","Historical sales data from a company's records","Web scraping of public information"], answer:0 }
 ];
 
 const DG_QUESTIONS = [
-  {
-    team: "DG",
-    text: "I want to get some data from another public agency. Where can I find such data?",
-    options: ["SGDI", "DataHive", "IM8", "AIBots"],
-    answer: 1
-  },
-  {
-    team: "DG",
-    text: "Who is accountable for the data quality of a dataset?",
-    options: ["Data analyst", "IT department", "Data requestor", "Data owner"],
-    answer: 3
-  },
-  {
-    team: "DG",
-    text: "You are merging datasets from 3 agencies.\n\nAgency A uses \"M/F\", Agency B uses \"Male/Female\", Agency C uses \"1/0\" for gender. This is primarily a problem with:",
-    options: ["Data accuracy", "Data standardisation", "Data completeness", "Data security"],
-    answer: 1
-  },
-  {
-    team: "DG",
-    text: "What is the main purpose of classifying data?",
-    options: [
-      "To determine the appropriate level of security and handling",
-      "To make data look more important",
-      "To decide which data to delete",
-      "To assign data to different departments"
-    ],
-    answer: 0
-  },
-  {
-    team: "DG",
-    text: "Under what circumstances is data classified as Sensitive (Normal)? When the unauthorised disclosure of data results in…",
-    options: [
-      "No damage to individual or entity",
-      "Sustained financial loss",
-      "Some temporary and minor emotional distress",
-      "Loss of life"
-    ],
-    answer: 2
-  },
-  {
-    team: "DG",
-    text: "When using public Internet-based SaaS or generative AI tools (e.g. Canva, Mentimeter, ChatGPT), what is the highest data classification level you are permitted to use?",
-    options: [
-      "Restricted / Sensitive-Normal",
-      "Confidential / Sensitive-Normal",
-      "Official (Closed) / Non-Sensitive",
-      "Secret / Sensitive-High"
-    ],
-    answer: 2
-  },
-  {
-    team: "DG",
-    text: "When can personal data be shared with external parties?",
-    options: [
-      "Whenever it's convenient for operations",
-      "Only with proper consent or legal basis, and appropriate safeguards",
-      "When the external party promises to keep it safe",
-      "After removing just the names and contact details"
-    ],
-    answer: 1
-  },
-  {
-    team: "DG",
-    text: "Before sending sensitive classified information to external vendors, officers should first…",
-    options: [
-      "Decide on mode of transfer (e.g. encrypted email, secure file transfer etc)",
-      "Create backup copies",
-      "Sanitise and declassify content",
-      "Implement access and retention controls for the shared data"
-    ],
-    answer: 2
-  },
-  {
-    team: "DG",
-    text: "When individuals request access to their personal data, agencies must provide a response within:",
-    options: ["14 calendar days", "21 calendar days", "30 calendar days", "60 calendar days"],
-    answer: 2
-  },
-  {
-    team: "DG",
-    text: "A member of public complains that their address in your system is outdated. This is primarily a problem with which data quality dimension?",
-    options: ["Accuracy", "Timeliness", "Completeness", "Integrity"],
-    answer: 1
-  },
-  {
-    team: "DG",
-    text: "Which data quality dimension would be most affected if your agency's system shows someone's age as 150 years old?",
-    options: ["Completeness", "Accuracy", "Consistency", "Timeliness"],
-    answer: 1
-  }
+  { team:"DG", text:"I want to get some data from another public agency. Where can I find such data?", options:["SGDI","DataHive","IM8","AIBots"], answer:1 },
+  { team:"DG", text:"Who is accountable for the data quality of a dataset?", options:["Data analyst","IT department","Data requestor","Data owner"], answer:3 },
+  { team:"DG", text:"You are merging datasets from 3 agencies.\n\nAgency A uses \"M/F\", Agency B uses \"Male/Female\", Agency C uses \"1/0\" for gender. This is primarily a problem with:", options:["Data accuracy","Data standardisation","Data completeness","Data security"], answer:1 },
+  { team:"DG", text:"What is the main purpose of classifying data?", options:["To determine the appropriate level of security and handling","To make data look more important","To decide which data to delete","To assign data to different departments"], answer:0 },
+  { team:"DG", text:"Under what circumstances is data classified as Sensitive (Normal)? When the unauthorised disclosure of data results in…", options:["No damage to individual or entity","Sustained financial loss","Some temporary and minor emotional distress","Loss of life"], answer:2 },
+  { team:"DG", text:"When using public Internet-based SaaS or generative AI tools (e.g. Canva, Mentimeter, ChatGPT), what is the highest data classification level you are permitted to use?", options:["Restricted / Sensitive-Normal","Confidential / Sensitive-Normal","Official (Closed) / Non-Sensitive","Secret / Sensitive-High"], answer:2 },
+  { team:"DG", text:"When can personal data be shared with external parties?", options:["Whenever it's convenient for operations","Only with proper consent or legal basis, and appropriate safeguards","When the external party promises to keep it safe","After removing just the names and contact details"], answer:1 },
+  { team:"DG", text:"Before sending sensitive classified information to external vendors, officers should first…", options:["Decide on mode of transfer (e.g. encrypted email, secure file transfer etc)","Create backup copies","Sanitise and declassify content","Implement access and retention controls for the shared data"], answer:2 },
+  { team:"DG", text:"When individuals request access to their personal data, agencies must provide a response within:", options:["14 calendar days","21 calendar days","30 calendar days","60 calendar days"], answer:2 },
+  { team:"DG", text:"A member of public complains that their address in your system is outdated. This is primarily a problem with which data quality dimension?", options:["Accuracy","Timeliness","Completeness","Integrity"], answer:1 },
+  { team:"DG", text:"Which data quality dimension would be most affected if your agency's system shows someone's age as 150 years old?", options:["Completeness","Accuracy","Consistency","Timeliness"], answer:1 }
 ];
 
 const PE_QUESTIONS = [
-  {
-    team: "PE",
-    text: "In the SMART framework, an indicator is considered 'Attainable' if:",
-    options: [
-      "It is written in a way that everyone in the department can understand.",
-      "It includes a specific numerical value and a percentage sign.",
-      "It perfectly aligns with the national high-level strategic goals.",
-      "It can be achieved within the available resources, budget, and timeframe."
-    ],
-    answer: 3
-  },
-  {
-    team: "PE",
-    text: "In a Theory of Change (ToC), what is the primary purpose of identifying 'assumptions'?",
-    options: [
-      "To describe the specific demographic of the target participants.",
-      "To calculate the total budget required for the inputs.",
-      "To list the potential risks that might prevent an activity from leading to an output.",
-      "To define the final long-term impact of the programme."
-    ],
-    answer: 2
-  },
-  {
-    team: "PE",
-    text: "Which of the following is the best example of a 'Specific' indicator in the SMART framework?",
-    options: [
-      "Make the programme as successful as possible for all stakeholders.",
-      "Increase the percentage of residents aged 65+ who can independently use government apps from 40% to 60%.",
-      "Reduce the wait time for citizens at service centers.",
-      "Improve the digital literacy of senior citizens in the next year."
-    ],
-    answer: 1
-  },
-  {
-    team: "PE",
-    text: "What is the key difference between Cost-Effectiveness Analysis (CEA) and Cost-Benefit Analysis (CBA)?",
-    options: [
-      "CEA measures outcomes in natural units (e.g., lives saved), while CBA converts all outcomes into monetary value.",
-      "CEA is used for private sector projects, while CBA is only for government programmes.",
-      "CEA does not consider the cost of the intervention, only the effectiveness.",
-      "CBA is performed before a programme starts, while CEA is only performed after it ends."
-    ],
-    answer: 0
-  },
-  {
-    team: "PE",
-    text: "Which data collection method is characterized by using information originally collected for routine operational or regulatory purposes?",
-    options: [
-      "Randomized Control Trial (RCT)",
-      "Longitudinal Surveys",
-      "Focus Group Discussions",
-      "Administrative Data"
-    ],
-    answer: 3
-  },
-  {
-    team: "PE",
-    text: "When setting a 'Measurable' indicator, why is a 'baseline' necessary?",
-    options: [
-      "To ensure that the budget is spent equally across all months.",
-      "To identify which staff members are responsible for data entry.",
-      "To prove that the programme was designed by experts.",
-      "To determine the starting point so that progress or change can be quantified."
-    ],
-    answer: 3
-  },
-  {
-    team: "PE",
-    text: "In the context of Theory of Change, what is the difference between an 'Output' and an 'Outcome'?",
-    options: [
-      "Outputs are the direct products of activities; Outcomes are the changes that result from those products.",
-      "There is no difference; the terms are used interchangeably in evaluation.",
-      "Outcomes happen during the programme; Outputs happen 5 years later.",
-      "Outputs are qualitative; Outcomes are always quantitative."
-    ],
-    answer: 0
-  },
-  {
-    team: "PE",
-    text: "Which of these is a significant advantage of using Survey Data over Administrative Data?",
-    options: [
-      "It covers the entire population by default.",
-      "It allows evaluators to capture subjective data like attitudes, perceptions, and beliefs.",
-      "It has no risk of 'non-response bias'.",
-      "It is always cheaper and faster to collect."
-    ],
-    answer: 1
-  },
-  {
-    team: "PE",
-    text: "An evaluation finds that a 'Time-based' indicator was missed because the target was set for a date after the programme's funding ended. This is a failure of which SMART component?",
-    options: [
-      "Measurable",
-      "Specific",
-      "Attainable / Relevant",
-      "Technological"
-    ],
-    answer: 2
-  },
-  {
-    team: "PE",
-    text: "When performing an economic evaluation, what is 'Discounting'?",
-    options: [
-      "Ignoring the costs that are too small to measure.",
-      "Reducing the price of the programme for low-income participants.",
-      "Adjusting future costs and benefits to their present-day value.",
-      "The process of removing outliers from a dataset."
-    ],
-    answer: 2
-  },
-  {
-    team: "PE",
-    text: "Which of the following is a 'Predictive' rather than 'Descriptive' use of data in evaluation?",
-    options: [
-      "Reporting that 500 people attended the training last month.",
-      "Using a regression model to estimate which future participants are most likely to drop out.",
-      "Calculating the average satisfaction score from a survey.",
-      "Creating a pie chart of the participants' age groups."
-    ],
-    answer: 1
-  },
-  {
-    team: "PE",
-    text: "When developing a Theory of Change, what is the role of 'Intermediate Outcomes'?",
-    options: [
-      "They are the unexpected negative side effects of a programme.",
-      "They are the physical goods or services delivered directly to the beneficiary.",
-      "They represent the internal administrative steps taken by the project team.",
-      "They act as the necessary preconditions or behavioral changes required to reach the final impact."
-    ],
-    answer: 3
-  }
+  { team:"PE", text:"In the SMART framework, an indicator is considered 'Attainable' if:", options:["It is written in a way that everyone in the department can understand.","It includes a specific numerical value and a percentage sign.","It perfectly aligns with the national high-level strategic goals.","It can be achieved within the available resources, budget, and timeframe."], answer:3 },
+  { team:"PE", text:"In a Theory of Change (ToC), what is the primary purpose of identifying 'assumptions'?", options:["To describe the specific demographic of the target participants.","To calculate the total budget required for the inputs.","To list the potential risks that might prevent an activity from leading to an output.","To define the final long-term impact of the programme."], answer:2 },
+  { team:"PE", text:"Which of the following is the best example of a 'Specific' indicator in the SMART framework?", options:["Make the programme as successful as possible for all stakeholders.","Increase the percentage of residents aged 65+ who can independently use government apps from 40% to 60%.","Reduce the wait time for citizens at service centers.","Improve the digital literacy of senior citizens in the next year."], answer:1 },
+  { team:"PE", text:"What is the key difference between Cost-Effectiveness Analysis (CEA) and Cost-Benefit Analysis (CBA)?", options:["CEA measures outcomes in natural units (e.g., lives saved), while CBA converts all outcomes into monetary value.","CEA is used for private sector projects, while CBA is only for government programmes.","CEA does not consider the cost of the intervention, only the effectiveness.","CBA is performed before a programme starts, while CEA is only performed after it ends."], answer:0 },
+  { team:"PE", text:"Which data collection method is characterized by using information originally collected for routine operational or regulatory purposes?", options:["Randomized Control Trial (RCT)","Longitudinal Surveys","Focus Group Discussions","Administrative Data"], answer:3 },
+  { team:"PE", text:"When setting a 'Measurable' indicator, why is a 'baseline' necessary?", options:["To ensure that the budget is spent equally across all months.","To identify which staff members are responsible for data entry.","To prove that the programme was designed by experts.","To determine the starting point so that progress or change can be quantified."], answer:3 },
+  { team:"PE", text:"In the context of Theory of Change, what is the difference between an 'Output' and an 'Outcome'?", options:["Outputs are the direct products of activities; Outcomes are the changes that result from those products.","There is no difference; the terms are used interchangeably in evaluation.","Outcomes happen during the programme; Outputs happen 5 years later.","Outputs are qualitative; Outcomes are always quantitative."], answer:0 },
+  { team:"PE", text:"Which of these is a significant advantage of using Survey Data over Administrative Data?", options:["It covers the entire population by default.","It allows evaluators to capture subjective data like attitudes, perceptions, and beliefs.","It has no risk of 'non-response bias'.","It is always cheaper and faster to collect."], answer:1 },
+  { team:"PE", text:"An evaluation finds that a 'Time-based' indicator was missed because the target was set for a date after the programme's funding ended. This is a failure of which SMART component?", options:["Measurable","Specific","Attainable / Relevant","Technological"], answer:2 },
+  { team:"PE", text:"When performing an economic evaluation, what is 'Discounting'?", options:["Ignoring the costs that are too small to measure.","Reducing the price of the programme for low-income participants.","Adjusting future costs and benefits to their present-day value.","The process of removing outliers from a dataset."], answer:2 },
+  { team:"PE", text:"Which of the following is a 'Predictive' rather than 'Descriptive' use of data in evaluation?", options:["Reporting that 500 people attended the training last month.","Using a regression model to estimate which future participants are most likely to drop out.","Calculating the average satisfaction score from a survey.","Creating a pie chart of the participants' age groups."], answer:1 },
+  { team:"PE", text:"When developing a Theory of Change, what is the role of 'Intermediate Outcomes'?", options:["They are the unexpected negative side effects of a programme.","They are the physical goods or services delivered directly to the beneficiary.","They represent the internal administrative steps taken by the project team.","They act as the necessary preconditions or behavioral changes required to reach the final impact."], answer:3 }
 ];
 
-const TOTAL_QUESTIONS = 6;
+const TOTAL = 6;
+const LABELS = ['A','B','C','D'];
+const TEAM_ICONS = { DA: '📊', DG: '🔒', PE: '📋' };
 
 function shuffle(arr) {
   const a = [...arr];
@@ -486,28 +410,39 @@ function shuffle(arr) {
 }
 
 function pickQuestions() {
-  const da = shuffle(DA_QUESTIONS).slice(0, 2);
-  const dg = shuffle(DG_QUESTIONS).slice(0, 2);
-  const pe = shuffle(PE_QUESTIONS).slice(0, 2);
-  return shuffle([...da, ...dg, ...pe]);
+  return shuffle([
+    ...shuffle(DA_QUESTIONS).slice(0, 2),
+    ...shuffle(DG_QUESTIONS).slice(0, 2),
+    ...shuffle(PE_QUESTIONS).slice(0, 2)
+  ]);
 }
 
-let questions = [], current = 0, score = 0, answered = false, results = [], userName = "";
+let questions=[], current=0, score=0, answered=false, results=[], userName="";
 
 function init() {
-  questions = []; current = 0; score = 0; answered = false; results = []; userName = "";
+  questions=[]; current=0; score=0; answered=false; results=[]; userName="";
   renderNameScreen();
 }
 
 function renderNameScreen() {
   document.getElementById('app').innerHTML = `
-    <h1>Hatch and Grow 2026</h1>
-    <p class="subtitle">DTO Data Challenge Booth &nbsp;·&nbsp; 6 questions &nbsp;·&nbsp; 2 from each team &nbsp;·&nbsp; Score out of 6</p>
-    <div class="name-screen">
-      <label for="nameInput">Enter your name to begin</label>
-      <input id="nameInput" type="text" placeholder="e.g. Jane Tan" autocomplete="off"
-        oninput="document.getElementById('startBtn').disabled = this.value.trim().length < 2"
-        onkeydown="if(event.key==='Enter' && this.value.trim().length >= 2) startQuiz()" />
+    <div class="animate">
+      <div class="name-hero">
+        <span class="icon">🌱</span>
+        <h2>Ready to test your knowledge?</h2>
+        <p>6 randomly selected questions across all 3 teams</p>
+        <div class="team-pills">
+          <span class="pill pill-DA">📊 Data Analytics</span>
+          <span class="pill pill-DG">🔒 Data Governance</span>
+          <span class="pill pill-PE">📋 Programme Evaluation</span>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label for="nameInput">Your name</label>
+        <input id="nameInput" type="text" placeholder="e.g. Jane Tan" autocomplete="off"
+          oninput="document.getElementById('startBtn').disabled = this.value.trim().length < 2"
+          onkeydown="if(event.key==='Enter' && this.value.trim().length >= 2) startQuiz()" />
+      </div>
       <button class="start-btn" id="startBtn" disabled onclick="startQuiz()">Start Quiz →</button>
     </div>
   `;
@@ -518,40 +453,37 @@ function startQuiz() {
   userName = document.getElementById('nameInput').value.trim();
   if (!userName) return;
   questions = pickQuestions();
-  current = 0; score = 0; answered = false; results = [];
+  current=0; score=0; answered=false; results=[];
   renderQuestion();
 }
 
 function renderQuestion() {
-  const app = document.getElementById('app');
-  const q   = questions[current];
-  const labels = ['a', 'b', 'c', 'd'];
-
-  app.innerHTML = `
-    <h1>Hatch and Grow 2026</h1>
-    <p class="subtitle">Hi <strong>${userName}</strong> &nbsp;·&nbsp; Score out of ${TOTAL_QUESTIONS}</p>
-    <div class="progress">
-      ${questions.map((_, i) => {
-        let cls = 'progress-dot';
-        if (i < current) cls += results[i] ? ' done' : ' wrong';
-        else if (i === current) cls += ' active';
-        return `<div class="${cls}"></div>`;
-      }).join('')}
+  const q = questions[current];
+  const pct = Math.round((current / TOTAL) * 100);
+  document.getElementById('app').innerHTML = `
+    <div class="animate">
+      <div class="quiz-header">
+        <span class="quiz-title">🌱 Hatch and Grow 2026</span>
+        <span class="quiz-counter">${current + 1} / ${TOTAL}</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <span class="team-badge team-${q.team}">${TEAM_ICONS[q.team]} ${q.team} Team</span>
+      <div class="q-text">${q.text}</div>
+      <div class="options" id="options">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn" onclick="selectAnswer(${i})">
+            <span class="opt-label">${LABELS[i]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+        ${current < TOTAL - 1 ? 'Next Question →' : 'See My Results →'}
+      </button>
     </div>
-    <span class="team-badge team-${q.team}">${q.team} Team</span>
-    <div class="q-number">Question ${current + 1} of ${questions.length}</div>
-    <div class="q-text">${q.text}</div>
-    <div class="options" id="options">
-      ${q.options.map((opt, i) => `
-        <button class="option-btn" onclick="selectAnswer(${i})">
-          <strong>${labels[i]})</strong>&nbsp; ${opt}
-        </button>
-      `).join('')}
-    </div>
-    <div class="feedback" id="feedback"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()">
-      ${current < questions.length - 1 ? 'Next Question →' : 'See Results'}
-    </button>
   `;
 }
 
@@ -561,18 +493,17 @@ function selectAnswer(chosen) {
   const q = questions[current];
   const correct = q.answer;
   const btns = document.querySelectorAll('.option-btn');
-  const fb   = document.getElementById('feedback');
+  const fb = document.getElementById('feedback');
   btns.forEach(b => b.disabled = true);
   if (chosen === correct) {
     btns[chosen].classList.add('correct');
-    fb.textContent = '✓ Correct!';
+    fb.innerHTML = '✅ Correct! Well done.';
     fb.className = 'feedback correct-msg';
-    score++;
-    results.push(true);
+    score++; results.push(true);
   } else {
     btns[chosen].classList.add('wrong');
     btns[correct].classList.add('reveal-correct');
-    fb.textContent = `✗ Incorrect. Correct answer: ${['a','b','c','d'][correct]}) ${q.options[correct]}`;
+    fb.innerHTML = `❌ Not quite. The correct answer is <strong>${LABELS[correct]}) ${q.options[correct]}</strong>`;
     fb.className = 'feedback wrong-msg';
     results.push(false);
   }
@@ -582,65 +513,103 @@ function selectAnswer(chosen) {
 function nextQuestion() {
   answered = false;
   current++;
-  if (current < questions.length) renderQuestion();
+  if (current < TOTAL) renderQuestion();
   else renderResult();
 }
 
 async function submitScore() {
   if (SCORE_WEBHOOK === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return;
   const payload = {
-    name:      userName,
-    score:     score,
-    total:     TOTAL_QUESTIONS,
+    name: userName, score, total: TOTAL,
     timestamp: new Date().toISOString(),
     questions: questions.map((q, i) => ({
-      team:     q.team,
+      team: q.team,
       question: q.text.split('\n')[0].slice(0, 80),
-      correct:  results[i]
+      correct: results[i]
     }))
   };
   try {
-    await fetch(SCORE_WEBHOOK, {
-      method: "POST",
-      mode:   "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+    await fetch(SCORE_WEBHOOK, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+    const el = document.getElementById('saving-status');
+    if (el) el.textContent = "✓ Score saved.";
+  } catch { }
+}
+
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = Array.from({length: 120}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 8 + 4,
+    d: Math.random() * 80 + 20,
+    color: ['#6366f1','#8b5cf6','#10b981','#f59e0b','#ef4444','#a5b4fc'][Math.floor(Math.random()*6)],
+    tilt: Math.random() * 10 - 10,
+    tiltAngle: 0, tiltSpeed: Math.random() * 0.1 + 0.05
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+      ctx.stroke();
+      p.y += Math.cos(frame / p.d) + 2;
+      p.x += Math.sin(frame / 5) * 1.5;
+      p.tiltAngle += p.tiltSpeed;
+      p.tilt = Math.sin(p.tiltAngle) * 12;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
     });
-    document.getElementById('saving-status').textContent = "✓ Score saved to log.";
-  } catch {
-    document.getElementById('saving-status').textContent = "";
+    frame++;
+    if (frame < 180) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
+  draw();
 }
 
 function renderResult() {
-  const app = document.getElementById('app');
-  const pct = score / TOTAL_QUESTIONS;
-  let ringClass, msg;
-  if (pct === 1)        { ringClass = 'score-perfect'; msg = 'Perfect score! Outstanding!'; }
-  else if (pct >= 0.67) { ringClass = 'score-good';    msg = 'Great job! Almost there!'; }
-  else if (pct >= 0.5)  { ringClass = 'score-ok';      msg = 'Good effort — keep practising!'; }
-  else                  { ringClass = 'score-low';      msg = "Keep going — you'll get there!"; }
+  const pct = score / TOTAL;
+  let ringClass, msg, emoji;
+  if (pct === 1)        { ringClass='score-perfect'; msg='Perfect score! Outstanding!'; emoji='🏆'; launchConfetti(); }
+  else if (pct >= 0.67) { ringClass='score-good';    msg='Great job! Almost perfect!'; emoji='🌟'; }
+  else if (pct >= 0.5)  { ringClass='score-ok';      msg='Good effort — keep going!'; emoji='💪'; }
+  else                  { ringClass='score-low';      msg="Keep practising — you've got this!"; emoji='📚'; }
 
-  const labels = ['a','b','c','d'];
   const reviewHTML = questions.map((q, i) => `
     <div class="review-item ${results[i] ? 'correct-item' : 'wrong-item'}">
-      <div class="q-label">${results[i] ? '✓' : '✗'} Q${i+1}
-        <span class="team-badge team-${q.team}" style="font-size:0.68rem;padding:2px 8px;">${q.team}</span>
-        — ${q.text.split('\n')[0]}
+      <div class="review-icon">${results[i] ? '✅' : '❌'}</div>
+      <div class="review-content">
+        <div class="q-label">
+          ${q.text.split('\n')[0].slice(0, 70)}${q.text.length > 70 ? '…' : ''}
+          <span class="team-badge team-${q.team} rb" style="font-size:0.65rem;padding:2px 8px;margin-left:6px;">${q.team}</span>
+        </div>
+        <div class="correct-a">✓ ${LABELS[q.answer]}) ${q.options[q.answer]}</div>
       </div>
-      <div class="correct-a">Correct answer: ${labels[q.answer]}) ${q.options[q.answer]}</div>
     </div>
   `).join('');
 
-  app.innerHTML = `
-    <div class="result">
-      <div class="score-ring ${ringClass}">${score}/${TOTAL_QUESTIONS}</div>
-      <h2>${msg}</h2>
-      <p><strong>${userName}</strong>, you answered <strong>${score} out of ${TOTAL_QUESTIONS}</strong> correctly.</p>
-      <div class="saving-msg" id="saving-status">Saving score…</div>
-      <button class="retry-btn" onclick="init()">Try Again with New Questions</button>
-      <div class="review">${reviewHTML}</div>
-      <button class="retry-btn" style="margin-top:16px;" onclick="init()">Try Again with New Questions</button>
+  document.getElementById('app').innerHTML = `
+    <div class="animate result">
+      <div class="score-wrap">
+        <div class="score-ring ${ringClass}">
+          <span>${score}/${TOTAL}</span>
+          <span class="score-label">Score</span>
+        </div>
+        <h2>${emoji} ${msg}</h2>
+        <p class="result-sub">Well done, <strong>${userName}</strong>! You got <strong>${score} out of ${TOTAL}</strong> correct.</p>
+      </div>
+      <div class="saving-msg" id="saving-status">Saving your score…</div>
+      <button class="retry-btn" onclick="init()">🔄 Try Again with New Questions</button>
+      <div class="review">
+        <h3>Answer Review</h3>
+        ${reviewHTML}
+      </div>
+      <button class="retry-btn" style="margin-top:8px;" onclick="init()">🔄 Try Again with New Questions</button>
     </div>
   `;
   submitScore();
