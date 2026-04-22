@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DA, DG & PE Quiz</title>
+  <title>Hatch and Grow 2026</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -501,8 +501,8 @@ function init() {
 
 function renderNameScreen() {
   document.getElementById('app').innerHTML = `
-    <h1>DA, DG & PE Quiz</h1>
-    <p class="subtitle">6 random questions &nbsp;·&nbsp; 2 from each team &nbsp;·&nbsp; Score out of 6</p>
+    <h1>Hatch and Grow 2026</h1>
+    <p class="subtitle">DTO Data Challenge Booth &nbsp;·&nbsp; 6 questions &nbsp;·&nbsp; 2 from each team &nbsp;·&nbsp; Score out of 6</p>
     <div class="name-screen">
       <label for="nameInput">Enter your name to begin</label>
       <input id="nameInput" type="text" placeholder="e.g. Jane Tan" autocomplete="off"
@@ -528,7 +528,7 @@ function renderQuestion() {
   const labels = ['a', 'b', 'c', 'd'];
 
   app.innerHTML = `
-    <h1>DA, DG & PE Quiz</h1>
+    <h1>Hatch and Grow 2026</h1>
     <p class="subtitle">Hi <strong>${userName}</strong> &nbsp;·&nbsp; Score out of ${TOTAL_QUESTIONS}</p>
     <div class="progress">
       ${questions.map((_, i) => {
