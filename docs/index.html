@@ -1,0 +1,1481 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Quest - MDDI Digital Dojo Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sun:      #f59e0b;
+      --sun-light:#fef3c7;
+      --sun-dim:  rgba(245,158,11,0.10);
+      --sky:      #0ea5e9;
+      --cream:    #fdfaf4;
+      --white:    #ffffff;
+      --border:   #ede8df;
+      --text:     #1c1917;
+      --muted:    #78716c;
+      --green:    #15803d;
+      --green-bg: #f0fdf4;
+      --red:      #b91c1c;
+      --red-bg:   #fef2f2;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--cream);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245,158,11,0.12) 0%, transparent 70%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    #confettiCanvas {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 760px;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow:
+        0 1px 3px rgba(245,158,11,0.08),
+        0 4px 16px rgba(0,0,0,0.05),
+        0 20px 48px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: var(--white);
+      border-top: 3px solid var(--sun);
+      padding: 36px 40px 0;
+      text-align: center;
+    }
+
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .header-logo {
+      height: 96px;
+      width: auto;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+    .eyebrow-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--sun);
+    }
+    .eyebrow-text {
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .header-sub {
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 460px;
+      margin: 0 auto 28px;
+    }
+
+    /* Karate decorations */
+    .header { position: relative; overflow: hidden; }
+
+    .karate-fig-left,
+    .karate-fig-right {
+      position: absolute;
+      bottom: 0;
+      opacity: 0.80;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 12px rgba(245,158,11,0.30));
+    }
+    .karate-fig-left  { left: -2px; }
+    .karate-fig-right { right: -2px; }
+
+    @keyframes karate-punch {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      35%, 58% { transform: translateX(16px) translateY(-5px); }
+    }
+    @keyframes karate-kick {
+      0%, 100% { transform: rotate(0deg); }
+      35%, 58% { transform: rotate(-22deg); }
+    }
+    @keyframes karate-bob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+    @keyframes burst-pulse {
+      0%, 100% { opacity: 0.85; }
+      35%, 65% { opacity: 0.08; }
+    }
+
+    .karate-punch-arm {
+      transform-box: fill-box;
+      transform-origin: 0% 50%;
+      animation: karate-punch 2.8s ease-in-out infinite;
+    }
+    .karate-kick-leg {
+      transform-box: fill-box;
+      transform-origin: 100% 0%;
+      animation: karate-kick 2.8s ease-in-out infinite;
+      animation-delay: 0.6s;
+    }
+    .karate-body-bob {
+      animation: karate-bob 2.8s ease-in-out infinite;
+    }
+    .karate-body-bob-r {
+      animation: karate-bob 2.8s ease-in-out infinite;
+      animation-delay: 0.6s;
+    }
+    .karate-burst {
+      animation: burst-pulse 2.8s ease-in-out infinite;
+    }
+    .karate-burst-r {
+      animation: burst-pulse 2.8s ease-in-out infinite;
+      animation-delay: 0.6s;
+    }
+
+    /* dojo belt stripe at bottom of header */
+    .dojo-stripe {
+      height: 6px;
+      background: linear-gradient(90deg, #e8930a, #fbbf24 50%, #e8930a);
+      margin-top: 16px;
+    }
+
+    .belt-ribbon {
+      display: flex;
+      justify-content: center;
+      margin: 2px auto 16px;
+    }
+    .belt-ribbon svg { width: 260px; height: auto; }
+
+    .rc-belt-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 14px auto 2px;
+    }
+    .rc-belt-wrap svg { width: 200px; height: auto; }
+
+    .rc-fig-wrap {
+      position: absolute;
+      bottom: 0;
+      opacity: 0.45;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 8px rgba(245,158,11,0.3));
+    }
+    .rc-fig-wrap.left  { left: 0; }
+    .rc-fig-wrap.right { right: 0; transform: scaleX(-1); }
+    .rc-hero { position: relative; overflow: hidden; }
+
+    /* Progress */
+    .progress-area { padding-bottom: 24px; }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .progress-row span { font-size: 0.73rem; color: var(--muted); font-weight: 500; }
+    .progress-row .pct { color: var(--sun); font-weight: 700; font-size: 0.78rem; }
+    .progress-track {
+      height: 4px;
+      background: #f3ede0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 4px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--sun), #fbbf24);
+      border-radius: 99px;
+      transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: #fffdf8;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 10px;
+      gap: 4px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Body */
+    .body { padding: 36px 40px; }
+
+    .question-block { display: none; }
+    .question-block.active { display: block; animation: slideUp 0.22s ease; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .q-num {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--sun);
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .q-divider { flex: 1; height: 1px; background: var(--border); }
+    .q-of { font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+
+    .q-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin: -10px 0 18px;
+    }
+
+    .q-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+    .q-text strong { color: var(--text); }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--white);
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .option:hover:not(.locked) {
+      border-color: var(--sun);
+      background: var(--sun-dim);
+    }
+    .option input[type="radio"] { display: none; }
+    .option.locked { cursor: default; }
+
+    .opt-key {
+      min-width: 28px; height: 28px;
+      border-radius: 7px;
+      background: #f5f0e8;
+      border: 1.5px solid #e5ddd0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      transition: all 0.15s;
+    }
+    .opt-text { font-size: 0.92rem; color: #44403c; line-height: 1.55; }
+
+    .option.selected { border-color: var(--sun); background: var(--sun-dim); }
+    .option.selected .opt-key { background: var(--sun); border-color: var(--sun); color: var(--white); }
+
+    /* Q6 submission styles */
+    .q-num-submit { background: #0ea5e9 !important; }
+
+    .submission-reqs {
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .req-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #92400e;
+      margin-bottom: 10px;
+    }
+    .req-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .req-list li {
+      font-size: 0.91rem;
+      color: #78350f;
+      font-weight: 500;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .req-list li::before {
+      content: '✦';
+      color: var(--sun);
+      font-size: 0.7rem;
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .submission-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .step-num {
+      min-width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--text);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step span:last-child {
+      font-size: 0.9rem;
+      color: #44403c;
+      line-height: 1.55;
+    }
+
+    .filepath-wrap { display: flex; flex-direction: column; gap: 7px; }
+    .filepath-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+    .filepath-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', 'Segoe UI', monospace;
+      font-size: 0.88rem;
+      color: var(--text);
+      resize: vertical;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: var(--white);
+      line-height: 1.6;
+    }
+    .filepath-input:focus {
+      outline: none;
+      border-color: var(--sun);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+    }
+    .filepath-input::placeholder { color: #b5aca0; }
+    .filepath-hint {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* submitted path display on report card */
+    .rc-submission-box {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .rc-submission-box .sub-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .rc-submission-box .sub-path {
+      font-size: 0.85rem;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.55;
+    }
+    .rc-submission-box .sub-empty {
+      font-size: 0.85rem;
+      color: var(--red);
+      font-style: italic;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      padding: 11px 28px;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.87rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--sun); color: var(--white); box-shadow: 0 2px 8px rgba(245,158,11,0.3); }
+    .btn-primary:hover   { background: #d97706; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: #c5bdb3; }
+
+    /* Results */
+    .results-screen { display: none; }
+    .results-screen.show { display: block; }
+
+    .rc-hero {
+      background: linear-gradient(160deg, #fffbeb 0%, #fff7ed 50%, #fffdf8 100%);
+      border-top: 3px solid var(--sun);
+      padding: 44px 40px 36px;
+      text-align: center;
+    }
+    .rc-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .rc-stars {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: var(--sun);
+      letter-spacing: 4px;
+    }
+    .rc-score-ring {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 2px solid #fcd34d;
+      background: var(--white);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 24px rgba(245,158,11,0.18);
+    }
+    .rc-score-ring.perfect {
+      border-color: var(--sun);
+      box-shadow: 0 4px 32px rgba(245,158,11,0.35);
+    }
+    .rc-score-inner { display: flex; align-items: baseline; gap: 3px; }
+    .rc-big   { font-size: 2.8rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .rc-sep   { font-size: 1.2rem; color: var(--muted); }
+    .rc-denom { font-size: 1.2rem; color: var(--muted); font-weight: 500; }
+
+    .rc-title { font-size: 1.3rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .rc-msg   { font-size: 0.87rem; color: var(--muted); line-height: 1.6; max-width: 420px; margin: 0 auto; }
+
+    .rc-body { padding: 32px 40px 40px; }
+    .rc-section-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .rc-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+    .rc-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fdfaf4;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      flex: 1;
+      min-width: 100px;
+      justify-content: center;
+    }
+    .rc-pill.ok  { border-color: #bbf7d0; background: var(--green-bg); color: var(--green); }
+    .rc-pill.err { border-color: #fecaca; background: var(--red-bg);   color: var(--red);   }
+    .rc-pill-icon { font-size: 1rem; }
+
+    .q-breakdown     { margin-bottom: 24px; }
+    .q-pills-row    { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .q-pill         { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 9px; font-size: 0.82rem; font-weight: 700; flex: 1; min-width: 70px; justify-content: center; }
+    .q-pill.correct { background: #f0fdf4; border: 1.5px solid #86efac; color: #15803d; }
+    .q-pill.wrong   { background: #fef2f2; border: 1.5px solid #fca5a5; color: #b91c1c; }
+    .q-review-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin: 4px 0 12px; }
+    .q-explain      { background: #fff8f8; border: 1.5px solid #fca5a5; border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
+    .q-explain-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .q-explain-num  { font-size: 0.72rem; font-weight: 800; background: #b91c1c; color: #fff; padding: 3px 9px; border-radius: 5px; }
+    .q-explain-topic { font-size: 0.82rem; font-weight: 700; color: #b91c1c; }
+    .q-explain-text { font-size: 0.86rem; color: #7f1d1d; line-height: 1.65; margin: 0 0 10px; }
+    .q-explain-concept { font-size: 0.81rem; color: #991b1b; line-height: 1.55; background: rgba(185,28,28,0.06); padding: 10px 13px; border-radius: 7px; border-left: 3px solid #fca5a5; }
+
+    .rc-retry-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .rc-retry-icon { font-size: 1.6rem; flex-shrink: 0; }
+    .rc-retry-text { font-size: 0.88rem; color: #78350f; line-height: 1.5; font-weight: 500; }
+    .rc-retry-text strong { color: #451a03; }
+
+    .rc-perfect-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: linear-gradient(135deg, #fef9c3, #fef3c7);
+      border: 1.5px solid #fcd34d;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .rc-perfect-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .rc-perfect-text { font-size: 0.9rem; color: #451a03; line-height: 1.55; font-weight: 500; }
+    .rc-perfect-text strong { color: #78350f; font-size: 1rem; display: block; margin-bottom: 2px; }
+
+    .rc-footer { display: flex; justify-content: center; padding-top: 24px; border-top: 1px solid var(--border); }
+
+    /* ── Intro / Registration Screen ──────────────────────────── */
+    .intro-screen {
+      padding: 48px 40px 52px;
+    }
+    .intro-welcome {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .intro-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+    }
+    .intro-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+    .intro-form {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+    .form-req { color: var(--sun); margin-left: 2px; }
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      font-size: 0.93rem;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--sun);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.14);
+    }
+    .form-input::placeholder { color: #b5aca0; }
+    .form-input.has-error,
+    .form-select.has-error { border-color: var(--red); }
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '\25BE';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 1.1rem;
+    }
+    .form-select { padding-right: 44px; cursor: pointer; }
+    .form-error {
+      font-size: 0.76rem;
+      color: var(--red);
+      display: none;
+    }
+    .form-error.show { display: block; }
+    .intro-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 36px;
+    }
+    .btn-lg { padding: 14px 40px; font-size: 0.95rem; }
+
+    /* rc-user shown on report card */
+    .rc-user {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.2px;
+    }
+    .rc-user strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+
+    <!-- karate figure left: punch stance with action lines -->
+    <svg class="karate-fig-left" viewBox="0 0 135 180" width="135" aria-hidden="true">
+      <!-- burst lines near punch fist — pulse animation -->
+      <g class="karate-burst">
+        <line x1="100" y1="43" x2="128" y2="28" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="103" y1="54" x2="132" y2="53" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" opacity="0.75"/>
+        <line x1="96"  y1="33" x2="120" y2="14" stroke="#fbbf24" stroke-width="2"   stroke-linecap="round" opacity="0.6"/>
+        <line x1="104" y1="65" x2="128" y2="74" stroke="#fbbf24" stroke-width="2"   stroke-linecap="round" opacity="0.5"/>
+      </g>
+      <!-- body bobs gently -->
+      <g class="karate-body-bob">
+        <!-- head -->
+        <circle cx="44" cy="18" r="16" fill="#d97706"/>
+        <!-- headband base -->
+        <rect x="28" y="12" width="32" height="8" rx="3.5" fill="#c2410c"/>
+        <!-- headband highlight -->
+        <rect x="28" y="13" width="32" height="5" rx="2.5" fill="#e8930a"/>
+        <!-- ties trailing right -->
+        <path d="M60 14 L72 8"  stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M60 19 L73 20" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- gi body -->
+        <path d="M24 36 L64 36 L58 88 L30 88 Z" fill="#d97706"/>
+        <!-- gi lapels -->
+        <path d="M44 36 L29 64" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M44 36 L59 64" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- yellow belt -->
+        <rect x="25" y="76" width="38" height="9" rx="4.5" fill="#fbbf24"/>
+        <ellipse cx="44" cy="80" rx="10" ry="6" fill="#f59e0b"/>
+        <!-- belt knot detail -->
+        <rect x="39" y="77" width="10" height="6" rx="2" fill="#e8930a"/>
+        <!-- guard arm (left) — static -->
+        <path d="M24 46 L9 34 L13 20" stroke="#d97706" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="12" cy="19" r="8" fill="#d97706"/>
+        <!-- punch arm (right) — ANIMATED -->
+        <g class="karate-punch-arm">
+          <path d="M64 47 L94 40 L108 47" stroke="#d97706" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="108" cy="47" r="9" fill="#d97706"/>
+          <!-- knuckle lines on fist -->
+          <line x1="103" y1="43" x2="103" y2="51" stroke="#c2410c" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="108" y1="42" x2="108" y2="52" stroke="#c2410c" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+        <!-- legs — wide fighting stance -->
+        <line x1="35" y1="88" x2="22" y2="152" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+        <line x1="53" y1="88" x2="66" y2="152" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+        <!-- feet -->
+        <ellipse cx="18" cy="157" rx="13" ry="6" fill="#d97706"/>
+        <ellipse cx="70" cy="157" rx="13" ry="6" fill="#d97706"/>
+      </g>
+    </svg>
+
+    <!-- karate figure right: flying high kick with action lines -->
+    <svg class="karate-fig-right" viewBox="0 0 135 180" width="135" aria-hidden="true">
+      <!-- burst lines near kick foot — delayed pulse -->
+      <g class="karate-burst-r">
+        <line x1="16"  y1="52" x2="2"  y2="38"  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="12"  y1="64" x2="-2" y2="62"  stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" opacity="0.75"/>
+        <line x1="22"  y1="40" x2="10" y2="22"  stroke="#fbbf24" stroke-width="2"   stroke-linecap="round" opacity="0.6"/>
+        <line x1="10"  y1="74" x2="2"  y2="88"  stroke="#fbbf24" stroke-width="2"   stroke-linecap="round" opacity="0.5"/>
+      </g>
+      <!-- body bobs with delay -->
+      <g class="karate-body-bob-r">
+        <!-- head (figure faces left) -->
+        <circle cx="91" cy="18" r="16" fill="#d97706"/>
+        <!-- headband -->
+        <rect x="75" y="12" width="32" height="8" rx="3.5" fill="#c2410c"/>
+        <rect x="75" y="13" width="32" height="5" rx="2.5" fill="#e8930a"/>
+        <!-- ties trailing left (back of head) -->
+        <path d="M75 14 L63 8"  stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M75 19 L62 20" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- gi body -->
+        <path d="M71 36 L111 36 L105 88 L77 88 Z" fill="#d97706"/>
+        <!-- gi lapels -->
+        <path d="M91 36 L76 64"  stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M91 36 L106 64" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- yellow belt -->
+        <rect x="72" y="76" width="38" height="9" rx="4.5" fill="#fbbf24"/>
+        <ellipse cx="91" cy="80" rx="10" ry="6" fill="#f59e0b"/>
+        <rect x="86" y="77" width="10" height="6" rx="2" fill="#e8930a"/>
+        <!-- right guard arm (raised high) -->
+        <path d="M111 44 L124 30 L120 16" stroke="#d97706" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="120" cy="15" r="8" fill="#d97706"/>
+        <!-- left arm tucked in guard -->
+        <path d="M71 48 L56 40" stroke="#d97706" stroke-width="9" stroke-linecap="round"/>
+        <!-- standing leg (right) -->
+        <line x1="91" y1="88" x2="98" y2="155" stroke="#d97706" stroke-width="10" stroke-linecap="round"/>
+        <ellipse cx="100" cy="160" rx="13" ry="6" fill="#d97706"/>
+        <!-- kick leg (left) — ANIMATED, swings upper-left -->
+        <g class="karate-kick-leg">
+          <path d="M83 88 L54 66 L26 52" stroke="#d97706" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <ellipse cx="22" cy="50" rx="13" ry="7" fill="#d97706" transform="rotate(-25 22 50)"/>
+          <!-- toes detail -->
+          <line x1="15" y1="46" x2="10" y2="42" stroke="#c2410c" stroke-width="2" stroke-linecap="round"/>
+          <line x1="19" y1="44" x2="15" y2="39" stroke="#c2410c" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </g>
+    </svg>
+
+    <div class="logo-wrap">
+      <img src="data:image/png;base64,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" alt="DTO Logo" class="header-logo">
+    </div>
+    <div class="header-eyebrow">
+      <span class="eyebrow-dot"></span>
+      <span class="eyebrow-text">MDDI &ldquo;Digital Dojo Framework&rdquo;</span>
+    </div>
+    <h1>Data Quest</h1>
+    <p class="header-sub">Complete Data Quest to attain your Yellow Belt (Practitioner) in Data Track</p>
+
+    <!-- yellow belt ribbon decoration -->
+    <div class="belt-ribbon" aria-hidden="true">
+      <svg viewBox="0 0 260 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- left belt end with stitching line -->
+        <rect x="0"   y="17" width="98"  height="14" rx="4" fill="#f59e0b"/>
+        <line x1="4" y1="24" x2="96" y2="24" stroke="#d97706" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+        <!-- right belt end with stitching line -->
+        <rect x="162" y="17" width="98"  height="14" rx="4" fill="#f59e0b"/>
+        <line x1="164" y1="24" x2="256" y2="24" stroke="#d97706" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+        <!-- left bow loop -->
+        <path d="M98 24 Q108 2 130 8 Q122 20 112 24 Z"  fill="#d97706"/>
+        <!-- right bow loop -->
+        <path d="M162 24 Q152 2 130 8 Q138 20 148 24 Z" fill="#d97706"/>
+        <!-- center knot body -->
+        <ellipse cx="130" cy="24" rx="16" ry="11" fill="#e8930a"/>
+        <!-- knot highlight -->
+        <ellipse cx="130" cy="20" rx="7"  ry="4"   fill="#fbbf24" opacity="0.5"/>
+        <!-- knot crease lines -->
+        <path d="M120 18 Q130 22 140 18" stroke="#d97706" stroke-width="1.5" fill="none" opacity="0.5"/>
+        <!-- hanging belt ends -->
+        <path d="M124 35 L120 48" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+        <path d="M136 35 L140 48" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="progress-area" id="progressWrap" style="display:none">
+      <div class="progress-row">
+        <span id="progressLabel">Question 1 of 6</span>
+        <span class="pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- dojo belt stripe -->
+  <div class="dojo-stripe"></div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat">
+      <span class="stat-value" id="statAnswered">0</span>
+      <span class="stat-label">Answered</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="statRemaining">5</span>
+      <span class="stat-label">Remaining</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="statCurrent">1</span>
+      <span class="stat-label">Current Q</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="statTotal">5</span>
+      <span class="stat-label">Total Qs</span>
+    </div>
+  </div>
+
+
+  <!-- Intro / registration screen -->
+  <div id="introScreen">
+    <div class="intro-screen">
+      <div class="intro-welcome">
+        <div class="intro-title">Welcome, Data Practitioner!</div>
+        <div class="intro-sub">Complete the form below to begin your Data Quest.<br>Your score will be recorded under your name and division.</div>
+      </div>
+      <div class="intro-form">
+
+        <div class="form-field">
+          <label class="form-label" for="regName">Full Name <span class="form-req">*</span></label>
+          <input class="form-input" type="text" id="regName" placeholder="e.g. Sarah Tan" autocomplete="name" />
+          <div class="form-error" id="errName">Please enter your full name.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="regEmail">Work Email <span class="form-req">*</span></label>
+          <input class="form-input" type="email" id="regEmail" placeholder="e.g. sarah_tan@mddi.gov.sg" autocomplete="email" />
+          <div class="form-error" id="errEmail">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="regDiv">Division <span class="form-req">*</span></label>
+          <div class="select-wrap">
+            <select class="form-select" id="regDiv">
+              <option value="">&#8212; Select your division &#8212;</option>
+              <option>MDDI Senior Management</option>
+              <option>AU</option>
+              <option>CDD-HR</option>
+              <option>CDD-WDD</option>
+              <option>CDD-TXO</option>
+              <option>CDCP</option>
+              <option>Civic</option>
+              <option>CED</option>
+              <option>DEO</option>
+              <option>DSD</option>
+              <option>DTO</option>
+              <option>GCDTO</option>
+              <option>GITD</option>
+              <option>IAD</option>
+              <option>ICO</option>
+              <option>IPD</option>
+              <option>JCC</option>
+              <option>JCDO</option>
+              <option>Legal</option>
+              <option>MD-CAD</option>
+              <option>MD-CO</option>
+              <option>MD-MAOD</option>
+              <option>MD-MED</option>
+              <option>NAIG</option>
+              <option>PCD-CPD</option>
+              <option>PCD-NMO</option>
+              <option>PCD-TD</option>
+              <option>PSMO</option>
+              <option>RDD</option>
+              <option>REACH</option>
+              <option>SNG-GDD</option>
+              <option>SNG-Products</option>
+              <option>SNG-Smart City</option>
+              <option>SNG-SPR</option>
+              <option>SNG-TCD</option>
+              <option>SNG-WDD</option>
+              <option>SNSO</option>
+              <option>SPD-Finance</option>
+              <option>SPD-Planning</option>
+              <option>SRD</option>
+              <option>TO</option>
+              <option>QPSU</option>
+            </select>
+          </div>
+          <div class="form-error" id="errDiv">Please select your division.</div>
+        </div>
+
+      </div>
+      <div class="intro-footer">
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Begin Data Quest &#8594;</button>
+      </div>
+    </div>
+  </div>
+  <!-- Quiz body -->
+  <div class="body" id="quizBody" style="display:none">
+
+    <!-- Q1 -->
+    <div class="question-block active" data-q="0">
+      <div class="q-header">
+        <span class="q-num">1</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 1 of 6</span>
+      </div>
+      <div class="q-text">In the dataset, which of the following columns is best described as a categorical variable?</div>
+      <div class="q-meta">Easy &middot; Data Types</div>
+      <div class="options">
+        <label class="option" onclick="pickOption(0,'A',this)"><input type="radio" name="q0" value="A"><span class="opt-key">A</span><span class="opt-text">Life_expectancy</span></label>
+        <label class="option" onclick="pickOption(0,'B',this)"><input type="radio" name="q0" value="B"><span class="opt-key">B</span><span class="opt-text">GDP_per_capita</span></label>
+        <label class="option" onclick="pickOption(0,'C',this)"><input type="radio" name="q0" value="C"><span class="opt-key">C</span><span class="opt-text">Economy_status_Developed</span></label>
+        <label class="option" onclick="pickOption(0,'D',this)"><input type="radio" name="q0" value="D"><span class="opt-key">D</span><span class="opt-text">Infant_deaths</span></label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block " data-q="1">
+      <div class="q-header">
+        <span class="q-num">2</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 2 of 6</span>
+      </div>
+      <div class="q-text">A student calculates the average life expectancy across all countries in 2015 and gets 69.4 years. A classmate says the median would be a better measure. When would the classmate be right?</div>
+      <div class="q-meta">Easy &middot; Mean vs Median</div>
+      <div class="options">
+        <label class="option" onclick="pickOption(1,'A',this)"><input type="radio" name="q1" value="A"><span class="opt-key">A</span><span class="opt-text">When the dataset contains more than 100 countries</span></label>
+        <label class="option" onclick="pickOption(1,'B',this)"><input type="radio" name="q1" value="B"><span class="opt-key">B</span><span class="opt-text">When some countries have very high or very low life expectancy, pulling the average away from the typical value</span></label>
+        <label class="option" onclick="pickOption(1,'C',this)"><input type="radio" name="q1" value="C"><span class="opt-key">C</span><span class="opt-text">When the mean and median produce noticeably different values</span></label>
+        <label class="option" onclick="pickOption(1,'D',this)"><input type="radio" name="q1" value="D"><span class="opt-key">D</span><span class="opt-text">When life expectancy data is collected over multiple years rather than a single year</span></label>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-block " data-q="2">
+      <div class="q-header">
+        <span class="q-num">3</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 3 of 6</span>
+      </div>
+      <div class="q-text">A researcher samples 40 countries from the dataset and calculates that average life expectancy is 69.4 years, with a 95% confidence interval of [66.8, 72.0] years. Which statement correctly interprets this interval?</div>
+      <div class="q-meta">Medium &middot; Confidence Intervals</div>
+      <div class="options">
+        <label class="option" onclick="pickOption(2,'A',this)"><input type="radio" name="q2" value="A"><span class="opt-key">A</span><span class="opt-text">There is a 95% probability that the true average life expectancy lies between 66.8 and 72.0 years</span></label>
+        <label class="option" onclick="pickOption(2,'B',this)"><input type="radio" name="q2" value="B"><span class="opt-key">B</span><span class="opt-text">95% of all countries in the dataset have a life expectancy between 66.8 and 72.0 years</span></label>
+        <label class="option" onclick="pickOption(2,'C',this)"><input type="radio" name="q2" value="C"><span class="opt-key">C</span><span class="opt-text">If the same sampling method were repeated many times, 95% of the constructed intervals would contain the true mean</span></label>
+        <label class="option" onclick="pickOption(2,'D',this)"><input type="radio" name="q2" value="D"><span class="opt-key">D</span><span class="opt-text">The sample mean of 69.4 years is accurate to within 5%</span></label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block " data-q="3">
+      <div class="q-header">
+        <span class="q-num">4</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 4 of 6</span>
+      </div>
+      <div class="q-text">The dataset shows countries with higher Schooling values tend to have higher life expectancy. A minister concludes: <em>&ldquo;We should invest in education to raise life expectancy.&rdquo;</em> Which is the strongest statistical objection?</div>
+      <div class="q-meta">Medium &middot; Confounding Variables</div>
+      <div class="options">
+        <label class="option" onclick="pickOption(3,'A',this)"><input type="radio" name="q3" value="A"><span class="opt-key">A</span><span class="opt-text">With 183 countries in the dataset, the sample is too small to identify reliable patterns</span></label>
+        <label class="option" onclick="pickOption(3,'B',this)"><input type="radio" name="q3" value="B"><span class="opt-key">B</span><span class="opt-text">The direction may be reversed &mdash; longer-lived populations may invest more in education</span></label>
+        <label class="option" onclick="pickOption(3,'C',this)"><input type="radio" name="q3" value="C"><span class="opt-key">C</span><span class="opt-text">Both schooling and life expectancy may be driven by a third factor (GDP per capita), so the correlation doesn't prove education causes longer lives</span></label>
+        <label class="option" onclick="pickOption(3,'D',this)"><input type="radio" name="q3" value="D"><span class="opt-key">D</span><span class="opt-text">Schooling figures are self-reported by governments and may be too inconsistent across countries to draw conclusions</span></label>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-block " data-q="4">
+      <div class="q-header">
+        <span class="q-num">5</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 5 of 6</span>
+      </div>
+      <div class="q-text">A researcher runs a two-sample t-test comparing average life expectancy in Africa vs the EU in 2015 and gets a p-value of 0.0001. A policy analyst concludes: &ldquo;The p-value proves that the EU&rsquo;s higher life expectancy is caused by its superior healthcare system.&rdquo; What is wrong with this interpretation?</div>
+      <div class="q-meta">Hard &middot; Hypothesis Testing</div>
+      <div class="options">
+        <label class="option" onclick="pickOption(4,'A',this)"><input type="radio" name="q4" value="A"><span class="opt-key">A</span><span class="opt-text">A p-value of 0.0001 is too extreme &mdash; hypothesis test results are only valid when p falls between 0.01 and 0.05</span></label>
+        <label class="option" onclick="pickOption(4,'B',this)"><input type="radio" name="q4" value="B"><span class="opt-key">B</span><span class="opt-text">The p-value only tells us the difference is unlikely to be due to chance &mdash; it says nothing about what is causing the difference</span></label>
+        <label class="option" onclick="pickOption(4,'C',this)"><input type="radio" name="q4" value="C"><span class="opt-key">C</span><span class="opt-text">The t-test is invalid because Africa and the EU have unequal numbers of countries in the dataset</span></label>
+        <label class="option" onclick="pickOption(4,'D',this)"><input type="radio" name="q4" value="D"><span class="opt-key">D</span><span class="opt-text">A p-value below 0.05 means the null hypothesis is proven false, so no further analysis is needed</span></label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block" data-q="5">
+      <div class="q-header">
+        <span class="q-num q-num-submit">6</span>
+        <div class="q-divider"></div>
+        <span class="q-of">Question 6 of 6 &nbsp;&middot;&nbsp; Practical Submission</span>
+      </div>
+      <div class="q-text">Build and submit a <strong>one-page interactive dashboard</strong> using either <strong>Tableau (.twbx)</strong> or <strong>Power BI (.pbix)</strong>.</div>
+
+      <div class="submission-reqs">
+        <div class="req-title">Your dashboard must include all of the following</div>
+        <ul class="req-list">
+          <li>KPI Cards</li>
+          <li>At least 3 charts</li>
+          <li>A short data storyline describing your key insights</li>
+          <li>Chart titles and interactive filters</li>
+        </ul>
+      </div>
+
+      <div class="submission-steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span>Save your completed dashboard as a <strong>.twbx</strong> (Tableau) or <strong>.pbix</strong> (Power BI) file</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span>Upload the file to your <strong>personal OneDrive folder</strong></span>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span>Copy the full file path or OneDrive link and paste it into the box below</span>
+        </div>
+      </div>
+
+      <div class="filepath-wrap">
+        <label class="filepath-label" for="dashboardPath">OneDrive File Path / Link</label>
+        <textarea id="dashboardPath" class="filepath-input" rows="3"
+          placeholder="e.g. https://onedrive.live.com/... &#10;or  C:\Users\YourName\OneDrive\Dashboard.pbix"></textarea>
+        <div class="filepath-hint">Paste the full OneDrive link or file path to your uploaded dashboard file (.twbx or .pbix)</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <button class="btn btn-ghost" id="btnBack" onclick="go(-1)" style="display:none">&#8592; Back</button>
+      <div></div>
+      <button class="btn btn-primary" id="btnNext" onclick="go(1)" disabled>Next &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Report Card -->
+  <div class="results-screen" id="resultsScreen">
+    <div class="rc-hero">
+
+      <!-- results karate figures (reuse same designs) -->
+      <svg class="rc-fig-wrap left" viewBox="0 0 110 160" width="95" aria-hidden="true">
+        <line x1="85" y1="38" x2="105" y2="28" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="88" y1="44" x2="110" y2="42" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+        <line x1="83" y1="32" x2="100" y2="18" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        <circle cx="38" cy="14" r="13" fill="#d97706"/>
+        <rect x="25" y="10" width="26" height="5" rx="2" fill="#e8930a"/>
+        <path d="M51 12 L58 8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+        <path d="M51 15 L59 15" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+        <path d="M22 30 L54 30 L50 72 L26 72 Z" fill="#d97706"/>
+        <path d="M38 30 L27 52" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <path d="M38 30 L49 52" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <rect x="23" y="61" width="30" height="7" rx="3" fill="#fbbf24"/>
+        <ellipse cx="38" cy="64" rx="8" ry="5" fill="#f59e0b"/>
+        <path d="M54 40 L78 34 L86 40" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M22 40 L10 30 L14 20" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <line x1="30" y1="72" x2="22" y2="118" stroke="#d97706" stroke-width="9" stroke-linecap="round"/>
+        <line x1="46" y1="72" x2="54" y2="118" stroke="#d97706" stroke-width="9" stroke-linecap="round"/>
+        <ellipse cx="19" cy="122" rx="9" ry="5" fill="#d97706"/>
+        <ellipse cx="57" cy="122" rx="9" ry="5" fill="#d97706"/>
+      </svg>
+      <svg class="rc-fig-wrap right" viewBox="0 0 120 160" width="95" aria-hidden="true">
+        <line x1="85" y1="30" x2="110" y2="22" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="88" y1="40" x2="115" y2="40" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+        <line x1="82" y1="22" x2="105" y2="10" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        <circle cx="38" cy="18" r="13" fill="#d97706"/>
+        <rect x="25" y="14" width="26" height="5" rx="2" fill="#e8930a"/>
+        <path d="M24 34 L52 34 L56 70 L20 70 Z" fill="#d97706"/>
+        <path d="M38 34 L28 54" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <path d="M38 34 L48 54" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+        <rect x="20" y="59" width="36" height="7" rx="3" fill="#fbbf24"/>
+        <ellipse cx="38" cy="62" rx="8" ry="5" fill="#f59e0b"/>
+        <path d="M24 44 L10 34 L14 22" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M52 38 L62 26 L58 16" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <line x1="28" y1="70" x2="22" y2="120" stroke="#d97706" stroke-width="9" stroke-linecap="round"/>
+        <path d="M48 70 L72 50 L96 42" stroke="#d97706" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <ellipse cx="99" cy="40" rx="10" ry="6" fill="#d97706" transform="rotate(-30 99 40)"/>
+        <ellipse cx="19" cy="124" rx="9" ry="5" fill="#d97706"/>
+      </svg>
+
+      <div class="rc-user" id="rcUser"></div>
+      <div class="rc-label">MDDI &ldquo;Digital Dojo Framework&rdquo; &middot; Data Track &middot; Report Card</div>
+      <div class="rc-stars" id="rcStars" style="display:none">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+      <div class="rc-score-ring" id="rcRing">
+        <div class="rc-score-inner">
+          <span class="rc-big" id="rcScore">0</span>
+          <span class="rc-sep">/</span>
+          <span class="rc-denom">5</span>
+        </div>
+      </div>
+      <!-- belt ribbon in results -->
+      <div class="rc-belt-wrap" aria-hidden="true">
+        <svg viewBox="0 0 180 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0"   y="11" width="65"  height="9" rx="3" fill="#f59e0b" opacity="0.6"/>
+          <rect x="115" y="11" width="65"  height="9" rx="3" fill="#f59e0b" opacity="0.6"/>
+          <path d="M65 15.5 Q72 2 90 7 Q85 14 77 15.5 Z"  fill="#d97706" opacity="0.7"/>
+          <path d="M115 15.5 Q108 2 90 7 Q95 14 103 15.5 Z" fill="#d97706" opacity="0.7"/>
+          <ellipse cx="90" cy="15.5" rx="11" ry="7.5" fill="#e8930a" opacity="0.75"/>
+          <ellipse cx="90" cy="13"   rx="5"  ry="3"   fill="#fbbf24"  opacity="0.4"/>
+          <path d="M86 23 L84 32" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" opacity="0.6"/>
+          <path d="M94 23 L96 32" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" opacity="0.6"/>
+        </svg>
+      </div>
+
+      <div class="rc-title" id="rcTitle"></div>
+      <div class="rc-msg"   id="rcMsg"></div>
+    </div>
+    <div class="rc-body">
+      <div class="rc-section-label">Question Breakdown</div>
+      <div class="q-breakdown" id="rcBreakdown"></div>
+      <div class="rc-submission-box">
+        <div class="sub-label">Dashboard Submission</div>
+        <div id="rcSubmissionPath"></div>
+      </div>
+      <div id="rcBanner"></div>
+      <div class="rc-footer">
+        <button class="btn btn-primary" onclick="restart()">&#8635;&nbsp; Try Again</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+  const MCQ_ANSWERS = ['C','B','C','C','B'];
+  const EXPLANATIONS = [
+    {
+      topic: 'Data Types',
+      explain: 'Economy_status_Developed takes only two values — 0 (developing) or 1 (developed) — making it a binary categorical variable that assigns each country to a group rather than measuring a quantity. Life_expectancy, GDP_per_capita, and Infant_deaths are all continuous numeric measures that can take a wide range of values.',
+      concept: 'Categorical variable — values represent distinct groups or categories (e.g. 0/1, yes/no, region names). Continuous variable — can take any numeric value within a range.'
+    },
+    {
+      topic: 'Mean vs Median',
+      explain: 'The mean is sensitive to extreme values. In the 2015 dataset, life expectancy ranges from ~51 years (Sierra Leone) to ~83.8 years (Japan) — these extremes can pull the mean away from the value that best represents the typical country. The median, being the middle value when sorted, is unaffected by how extreme the outliers are.',
+      concept: 'Use the median when data is skewed or contains outliers. Use the mean when data is roughly symmetrical with no extreme values.'
+    },
+    {
+      topic: 'Sampling Bias',
+      explain: 'If Country A has 16 rows and Country B has 8 rows, Country A contributes twice as many data points to the regional average even though both countries should carry equal weight. A fairer approach: compute each country’s average first, then average across countries — giving every country equal weight regardless of how many years of data it has.',
+      concept: 'Sampling bias occurs when some units are over- or under-represented in a sample, causing estimates to be systematically skewed toward those units.'
+    },
+    {
+      topic: 'Confounding Variables',
+      explain: 'The minister is treating a correlation as evidence of causation. Wealthier countries (high GDP) can afford both better schools and better healthcare — so as GDP rises, both schooling and life expectancy rise together, not necessarily because one causes the other. GDP per capita is the confounding variable here.',
+      concept: 'A confounding variable is associated with both the predictor and the outcome, creating a spurious correlation between them. Observational data alone cannot establish causation.'
+    },
+    {
+      topic: 'Hypothesis Testing',
+      explain: 'A p-value of 0.0001 tells us the observed difference between Africa and the EU is extremely unlikely to have occurred by chance alone — but it says nothing about why the difference exists. The analyst is confusing statistical significance with causal explanation. Many factors (GDP, infrastructure, conflict, disease burden) could explain the gap. A t-test cannot determine which one is responsible.',
+      concept: 'Statistical significance (p-value) tells you a result is unlikely to be random — it does not tell you what causes the difference. Causation requires a controlled study or a causal inference framework, not just a low p-value.'
+    }
+  ];
+  const MCQ_TOTAL   = 5;
+  const TOTAL       = 6;
+
+  let current     = 0;
+  let userAnswers = Array(TOTAL).fill(null);
+  var regName = '', regEmail = '', regDiv = '';
+
+  function startQuiz() {
+    var name  = document.getElementById('regName').value.trim();
+    var email = document.getElementById('regEmail').value.trim();
+    var div   = document.getElementById('regDiv').value;
+    var ok = true;
+
+    // clear previous errors
+    ['regName','regEmail','regDiv'].forEach(function(id) {
+      document.getElementById(id).classList.remove('has-error');
+    });
+    ['errName','errEmail','errDiv'].forEach(function(id) {
+      document.getElementById(id).classList.remove('show');
+    });
+
+    if (!name) {
+      document.getElementById('regName').classList.add('has-error');
+      document.getElementById('errName').classList.add('show');
+      ok = false;
+    }
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRe.test(email)) {
+      document.getElementById('regEmail').classList.add('has-error');
+      document.getElementById('errEmail').classList.add('show');
+      ok = false;
+    }
+    if (!div) {
+      document.getElementById('regDiv').classList.add('has-error');
+      document.getElementById('errDiv').classList.add('show');
+      ok = false;
+    }
+    if (!ok) return;
+
+    regName  = name;
+    regEmail = email;
+    regDiv   = div;
+
+    document.getElementById('introScreen').style.display  = 'none';
+    document.getElementById('statsBar').style.display     = '';
+    document.getElementById('progressWrap').style.display = '';
+    document.getElementById('quizBody').style.display     = '';
+    syncUI();
+  }
+
+  function pickOption(qIdx, val, el) {
+    document.querySelectorAll('[data-q="' + qIdx + '"] .option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    userAnswers[qIdx] = val;
+    if (current === qIdx) document.getElementById('btnNext').disabled = false;
+  }
+
+  document.getElementById('dashboardPath').addEventListener('input', function() {
+    userAnswers[5] = this.value.trim() || null;
+    if (current === 5) document.getElementById('btnNext').disabled = !userAnswers[5];
+  });
+
+  function go(dir) {
+    if (dir === 1 && current === TOTAL - 1) { showResults(); return; }
+    var blocks = document.querySelectorAll('.question-block');
+    blocks[current].classList.remove('active');
+    current = Math.max(0, Math.min(TOTAL - 1, current + dir));
+    blocks[current].classList.add('active');
+    syncUI();
+  }
+
+  function syncUI() {
+    var answered = userAnswers.filter(function(a) { return a !== null; }).length;
+    var pct      = Math.round((current / TOTAL) * 100);
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = 'Question ' + (current + 1) + ' of ' + TOTAL;
+    document.getElementById('progressPct').textContent   = pct + '%';
+    document.getElementById('statAnswered').textContent  = answered;
+    document.getElementById('statRemaining').textContent = TOTAL - answered;
+    document.getElementById('statCurrent').textContent   = current + 1;
+    document.getElementById('btnBack').style.display = current > 0 ? 'inline-block' : 'none';
+    var btn = document.getElementById('btnNext');
+    btn.textContent = current === TOTAL - 1 ? 'Submit' : 'Next →';
+    btn.disabled    = userAnswers[current] === null;
+  }
+
+  function showResults() {
+    document.getElementById('quizBody').style.display = 'none';
+    document.getElementById('resultsScreen').classList.add('show');
+    document.getElementById('progressFill').style.width  = '100%';
+    document.getElementById('progressLabel').textContent = 'Completed';
+    document.getElementById('progressPct').textContent   = '100%';
+    document.getElementById('statAnswered').textContent  = TOTAL;
+    document.getElementById('statRemaining').textContent = 0;
+
+    var mcqScore   = userAnswers.slice(0,5).filter(function(a,i) { return a === MCQ_ANSWERS[i]; }).length;
+    var dashPath   = userAnswers[5];
+    var perfectMCQ = mcqScore === MCQ_TOTAL;
+    var hasDash    = !!dashPath;
+
+    document.getElementById('rcScore').textContent = mcqScore;
+    var bdHTML = '<div class="q-pills-row">';
+    for (var i = 0; i < 5; i++) {
+      var isCorrect = userAnswers[i] === MCQ_ANSWERS[i];
+      bdHTML += '<div class="q-pill ' + (isCorrect ? 'correct' : 'wrong') + '">Q' + (i+1) + ' ' + (isCorrect ? '&#10003;' : '&#10007;') + '</div>';
+    }
+    bdHTML += '</div>';
+    document.getElementById('rcBreakdown').innerHTML = bdHTML;
+    document.getElementById('rcUser').innerHTML = '<strong>' + regName + '</strong> &middot; ' + regDiv;
+
+    // Save to Supabase
+    fetch('https://guzjfxprwxpuopsmkfdo.supabase.co/rest/v1/quiz_responses', {
+      method: 'POST',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1empmeHByd3hwdW9wc21rZmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzY2NDEsImV4cCI6MjA5NzI1MjY0MX0.Rr-V-oG8qlyM6egcs_BfPALX_TXpl68wltonlyVn-lo',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1empmeHByd3hwdW9wc21rZmRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NzY2NDEsImV4cCI6MjA5NzI1MjY0MX0.Rr-V-oG8qlyM6egcs_BfPALX_TXpl68wltonlyVn-lo',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        name:           regName,
+        email:          regEmail,
+        division:       regDiv,
+        q1:             userAnswers[0],
+        q2:             userAnswers[1],
+        q3:             userAnswers[2],
+        q4:             userAnswers[3],
+        q5:             userAnswers[4],
+        mcq_score:      mcqScore,
+        dashboard_path: dashPath || null,
+        yellow_belt:    perfectMCQ && hasDash
+      })
+    }).catch(function(err) { console.error('Supabase save failed:', err); });
+
+    if (mcqScore === 5 && dashPath) {
+      fetch('https://guzjfxprwxpuopsmkfdo.supabase.co/functions/v1/notify-perfect-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ record: {
+          name:           regName,
+          email:          regEmail,
+          division:       regDiv,
+          mcq_score:      mcqScore,
+          dashboard_path: dashPath
+        }})
+      }).catch(function(err) { console.error('Notify failed:', err); });
+    }
+
+    var pathEl = document.getElementById('rcSubmissionPath');
+    pathEl.innerHTML = hasDash
+      ? '<span class="sub-path">&#10003;&nbsp;' + dashPath + '</span>'
+      : '<span class="sub-empty">No file path submitted</span>';
+
+    var bannerEl = document.getElementById('rcBanner');
+    if (perfectMCQ && hasDash) {
+      document.getElementById('rcRing').classList.add('perfect');
+      document.getElementById('rcStars').style.display = 'block';
+      document.getElementById('rcTitle').textContent = 'Congratulations!';
+      document.getElementById('rcMsg').textContent   = 'You scored 5/5 on the quiz! DTO will assess your dashboard and inform you on the outcome via email.';
+      bannerEl.innerHTML = '<div class="rc-perfect-banner"><span class="rc-perfect-icon">&#127894;</span><div class="rc-perfect-text">Congrats on getting 5/5! DTO will assess your dashboard and inform you on the outcome via email!</div></div>';
+      launchConfetti();
+    } else {
+      document.getElementById('rcTitle').textContent = 'Not quite there yet!';
+      document.getElementById('rcMsg').textContent   = 'A perfect quiz score (5/5) and a dashboard submission are both required for the Yellow Belt. Please try again!';
+      bannerEl.innerHTML = '<div class="rc-retry-banner"><span class="rc-retry-icon">&#128161;</span><div class="rc-retry-text"><strong>Requirements: 5 / 5 quiz score + dashboard submission</strong><br>Review the material, complete your dashboard, and give it another go!</div></div>';
+    }
+  }
+
+  function launchConfetti() {
+    var canvas = document.getElementById('confettiCanvas');
+    canvas.style.display = 'block';
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+    var COLORS = ['#f59e0b','#fbbf24','#0ea5e9','#34d399','#f472b6','#a78bfa','#fb923c','#ffffff'];
+    var pieces = [];
+    for (var i = 0; i < 180; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * canvas.height * 0.5,
+        w: 6 + Math.random() * 10,
+        h: 4 + Math.random() * 6,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        rot: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 4,
+        speed: 2.5 + Math.random() * 3,
+        drift: (Math.random() - 0.5) * 1.5,
+        opacity: 0.75 + Math.random() * 0.25
+      });
+    }
+    var raf;
+    var deadline = Date.now() + 5000;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var alive = false;
+      pieces.forEach(function(p) {
+        p.y += p.speed; p.x += p.drift; p.rot += p.rotSpeed;
+        if (p.y < canvas.height + 20) alive = true;
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      if (alive && Date.now() < deadline) { raf = requestAnimationFrame(draw); }
+      else { canvas.style.display = 'none'; cancelAnimationFrame(raf); }
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  function restart() {
+    current     = 0;
+    userAnswers = Array(TOTAL).fill(null);
+    document.getElementById('resultsScreen').classList.remove('show');
+    document.getElementById('quizBody').style.display = 'block';
+    document.getElementById('dashboardPath').value = '';
+    document.querySelectorAll('.question-block').forEach(function(b, i) {
+      b.classList.toggle('active', i === 0);
+      b.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected','locked'); });
+      b.querySelectorAll('input[type="radio"]').forEach(function(r) { r.checked = false; });
+    });
+    document.getElementById('rcRing').classList.remove('perfect');
+    document.getElementById('rcStars').style.display = 'none';
+    document.getElementById('rcBanner').innerHTML = '';
+    document.getElementById('rcBreakdown').innerHTML = '';
+    document.getElementById('rcSubmissionPath').innerHTML = '';
+    document.getElementById('rcUser').innerHTML = '';
+    document.getElementById('introScreen').style.display  = '';
+    document.getElementById('statsBar').style.display     = 'none';
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('quizBody').style.display     = 'none';
+    // reset form
+    document.getElementById('regName').value  = '';
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regDiv').value   = '';
+    ['regName','regEmail','regDiv'].forEach(function(id){ document.getElementById(id).classList.remove('has-error'); });
+    ['errName','errEmail','errDiv'].forEach(function(id){ document.getElementById(id).classList.remove('show'); });
+    regName = ''; regEmail = ''; regDiv = '';
+    syncUI();
+  }
+
+  syncUI();
+</script>
+</body>
+</html>
